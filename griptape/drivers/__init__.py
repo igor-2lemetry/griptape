@@ -97,7 +97,6 @@ __all__ = [
     "BaseImageGenerationDriver",
     "BaseMultiModelImageGenerationDriver",
     "BaseImageModificationDriver",
-    "BaseImageInpaintingDriver",
     "OpenAiDalleImageGenerationDriver",
     "LeonardoImageGenerationDriver",
     "AmazonBedrockImageGenerationDriver",
