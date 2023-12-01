@@ -1,14 +1,14 @@
+from .action_subtask import ActionSubtask
 from .base_task import BaseTask
 from .base_text_input_task import BaseTextInputTask
-from .prompt_task import PromptTask
-from .action_subtask import ActionSubtask
-from .toolkit_task import ToolkitTask
-from .text_summary_task import TextSummaryTask
-from .tool_task import ToolTask
-from .text_query_task import TextQueryTask
 from .extraction_task import ExtractionTask
-from .image_generation_task import ImageGenerationTask
-from .image_modification_task import ImageModificationTask
+from .image_to_image_generation_task import ImageToImageGenerationTask
+from .prompt_task import PromptTask
+from .text_query_task import TextQueryTask
+from .text_summary_task import TextSummaryTask
+from .text_to_image_generation_task import TextToImageGenerationTask
+from .tool_task import ToolTask
+from .toolkit_task import ToolkitTask
 
 __all__ = [
     "BaseTask",
@@ -20,6 +20,6 @@ __all__ = [
     "ToolTask",
     "TextQueryTask",
     "ExtractionTask",
-    "ImageGenerationTask",
-    "ImageModificationTask",
+    "TextToImageGenerationTask",
+    "ImageToImageGenerationTask",
 ]
