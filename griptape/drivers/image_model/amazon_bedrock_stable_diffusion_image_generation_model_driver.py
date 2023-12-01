@@ -17,6 +17,7 @@ class AmazonBedrockStableDiffusionImageGenerationModelDriver(BaseCombinedGenerat
     clip_guidance_preset: Optional[str] = field(default=None, kw_only=True)
     sampler: Optional[str] = field(default=None, kw_only=True)
     steps: Optional[int] = field(default=None, kw_only=True)
+    start_schedule: Optional[float] = field(default=None, kw_only=True)
 
     def text_to_image_request_parameters(
         self,
@@ -84,6 +85,9 @@ class AmazonBedrockStableDiffusionImageGenerationModelDriver(BaseCombinedGenerat
         if mask_image is not None:
             request["mask_source"] = self.mask_source
             request["mask_image"] = mask_image.base64
+
+        if self.start_schedule is not None:
+            request["start_schedule"] = self.start_schedule
 
         return request
 

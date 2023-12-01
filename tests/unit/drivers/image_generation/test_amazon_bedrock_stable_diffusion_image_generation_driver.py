@@ -29,9 +29,7 @@ class TestAmazonBedrockImageGenerationDriver:
     @pytest.fixture
     def driver(self, session, model_driver):
         return AmazonBedrockImageGenerationDriver(
-            session=session,
-            model="stability.stable-diffusion-xl-v1",
-            text_to_image_generation_model_driver=model_driver,
+            session=session, model="stability.stable-diffusion-xl-v1", image_generation_model_driver=model_driver
         )
 
     def test_init(self, driver):
@@ -55,7 +53,7 @@ class TestAmazonBedrockImageGenerationDriver:
             )
         }
 
-        image_artifact = driver.generate_image(prompts=["test prompt"], negative_prompts=["test negative prompt"])
+        image_artifact = driver.try_generate_image(prompts=["test prompt"], negative_prompts=["test negative prompt"])
 
         assert image_artifact.value == b"image data"
         assert image_artifact.mime_type == "image/png"
