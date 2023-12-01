@@ -5,8 +5,7 @@ from typing import Optional, TYPE_CHECKING
 
 from attr import define
 
-if TYPE_CHECKING:
-    from griptape.drivers import BaseImageGenerationModelDriver
+from griptape.drivers import BaseImageGenerationModelDriver
 
 
 @define

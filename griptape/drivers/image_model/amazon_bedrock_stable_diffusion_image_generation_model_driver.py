@@ -6,17 +6,13 @@ from typing import Optional, TYPE_CHECKING
 from attr import field, define
 
 from griptape.artifacts import ImageArtifact
-
-if TYPE_CHECKING:
-    from griptape.drivers import BaseTextToImageGenerationModelDriver
-    from griptape.drivers import BaseImageToImageGenerationModelDriver
+from griptape.drivers.image_model.base_combined_generation_model_driver import BaseCombinedGenerationModelDriver
 
 
 @define
-class AmazonBedrockStableDiffusionImageGenerationModelDriver(
-    BaseTextToImageGenerationModelDriver, BaseImageToImageGenerationModelDriver
-):
+class AmazonBedrockStableDiffusionImageGenerationModelDriver(BaseCombinedGenerationModelDriver):
     cfg_scale: int = field(default=7, kw_only=True)
+    mask_source: str = field(default="MASK_IMAGE_BLACK", kw_only=True)
     style_preset: Optional[str] = field(default=None, kw_only=True)
     clip_guidance_preset: Optional[str] = field(default=None, kw_only=True)
     sampler: Optional[str] = field(default=None, kw_only=True)
@@ -62,7 +58,34 @@ class AmazonBedrockStableDiffusionImageGenerationModelDriver(
         negative_prompts: Optional[list[str]] = None,
         seed: Optional[int] = None,
     ) -> dict:
-        ...
+        if negative_prompts is None:
+            negative_prompts = []
+
+        text_prompts = [{"text": prompt, "weight": 1.0} for prompt in prompts]
+        text_prompts += [{"text": negative_prompt, "weight": -1.0} for negative_prompt in negative_prompts]
+
+        request = {
+            "text_prompts": text_prompts,
+            "cfg_scale": self.cfg_scale,
+            "style_preset": self.style_preset,
+            "clip_guidance_preset": self.clip_guidance_preset,
+            "sampler": self.sampler,
+            "width": image.width,
+            "height": image.height,
+            "init_image": image.base64,
+        }
+
+        if self.steps is not None:
+            request["steps"] = self.steps
+
+        if seed is not None:
+            request["seed"] = seed
+
+        if mask_image is not None:
+            request["mask_source"] = self.mask_source
+            request["mask_image"] = mask_image.base64
+
+        return request
 
     def get_generated_image(self, response: dict) -> bytes:
         image_response = response["artifacts"][0]

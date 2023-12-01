@@ -29,7 +29,9 @@ class TestAmazonBedrockImageGenerationDriver:
     @pytest.fixture
     def driver(self, session, model_driver):
         return AmazonBedrockImageGenerationDriver(
-            session=session, model="stability.stable-diffusion-xl-v1", image_generation_model_driver=model_driver
+            session=session,
+            model="stability.stable-diffusion-xl-v1",
+            text_to_image_generation_model_driver=model_driver,
         )
 
     def test_init(self, driver):

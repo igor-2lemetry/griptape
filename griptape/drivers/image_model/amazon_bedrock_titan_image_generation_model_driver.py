@@ -1,12 +1,11 @@
 from __future__ import annotations
 
 import base64
-from typing import Optional, TYPE_CHECKING
+from typing import Optional
 
 from attr import field, define
 
-if TYPE_CHECKING:
-    from griptape.drivers import BaseTextToImageGenerationModelDriver
+from griptape.drivers import BaseTextToImageGenerationModelDriver
 
 
 @define

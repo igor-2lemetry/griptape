@@ -8,8 +8,7 @@ from attr import field, Factory, define
 
 from griptape.artifacts import ImageArtifact
 
-if TYPE_CHECKING:
-    from griptape.drivers import BaseTextToImageGenerationDriver
+from .base_text_to_image_generation_driver import BaseTextToImageGenerationDriver
 
 
 @define

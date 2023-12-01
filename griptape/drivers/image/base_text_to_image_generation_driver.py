@@ -7,8 +7,7 @@ from attr import define
 
 from griptape.artifacts import ImageArtifact
 
-if TYPE_CHECKING:
-    from griptape.drivers import BaseImageGenerationDriver
+from .base_image_generation_driver import BaseImageGenerationDriver
 
 
 @define

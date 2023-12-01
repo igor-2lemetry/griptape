@@ -6,9 +6,7 @@ from typing import Optional, TYPE_CHECKING
 from attr import define
 
 from griptape.artifacts import ImageArtifact
-
-if TYPE_CHECKING:
-    from griptape.drivers import BaseImageGenerationModelDriver
+from griptape.drivers import BaseImageGenerationModelDriver
 
 
 @define
