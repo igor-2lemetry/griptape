@@ -1,13 +1,21 @@
+from __future__ import annotations
+
 import base64
-from typing import Optional
+from typing import Optional, TYPE_CHECKING
 
 from attr import field, define
 
-from griptape.drivers import BaseImageGenerationModelDriver
+from griptape.artifacts import ImageArtifact
+
+if TYPE_CHECKING:
+    from griptape.drivers import BaseTextToImageGenerationModelDriver
+    from griptape.drivers import BaseImageToImageGenerationModelDriver
 
 
 @define
-class AmazonBedrockStableDiffusionImageGenerationModelDriver(BaseImageGenerationModelDriver):
+class AmazonBedrockStableDiffusionImageGenerationModelDriver(
+    BaseTextToImageGenerationModelDriver, BaseImageToImageGenerationModelDriver
+):
     cfg_scale: int = field(default=7, kw_only=True)
     style_preset: Optional[str] = field(default=None, kw_only=True)
     clip_guidance_preset: Optional[str] = field(default=None, kw_only=True)
@@ -45,6 +53,16 @@ class AmazonBedrockStableDiffusionImageGenerationModelDriver(BaseImageGeneration
             request["seed"] = seed
 
         return request
+
+    def image_to_image_request_parameters(
+        self,
+        prompts: list[str],
+        image: ImageArtifact,
+        mask_image: Optional[ImageArtifact] = None,
+        negative_prompts: Optional[list[str]] = None,
+        seed: Optional[int] = None,
+    ) -> dict:
+        ...
 
     def get_generated_image(self, response: dict) -> bytes:
         image_response = response["artifacts"][0]

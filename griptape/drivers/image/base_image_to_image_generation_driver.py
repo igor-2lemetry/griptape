@@ -1,13 +1,19 @@
+from __future__ import annotations
+
 from abc import abstractmethod
-from typing import Optional
+from typing import Optional, TYPE_CHECKING
+
 from attr import define
+
 from griptape.artifacts import ImageArtifact
-from griptape.drivers import BaseImageDriver
+
+if TYPE_CHECKING:
+    from griptape.drivers import BaseImageGenerationDriver
 
 
 @define
-class BaseImageModificationDriver(BaseImageDriver):
-    def modify_image(
+class BaseImageToImageGenerationDriver(BaseImageGenerationDriver):
+    def image_to_image_generation(
         self,
         input_image: ImageArtifact,
         prompts: list[str],
@@ -16,12 +22,12 @@ class BaseImageModificationDriver(BaseImageDriver):
     ) -> ImageArtifact:
         for attempt in self.retrying():
             with attempt:
-                return self.try_modify_image(
+                return self.try_image_to_image_generation(
                     input_image, prompts=prompts, mask_image=mask_image, negative_prompts=negative_prompts
                 )
 
     @abstractmethod
-    def try_modify_image(
+    def try_image_to_image_generation(
         self,
         image: ImageArtifact,
         prompts: list[str],

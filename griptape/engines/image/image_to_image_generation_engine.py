@@ -3,13 +3,13 @@ from typing import Optional
 from attr import field, define
 
 from griptape.artifacts import ImageArtifact
-from griptape.drivers import BaseImageGenerationDriver, BaseImageModificationDriver
-from griptape.rules import Rule, Ruleset
+from griptape.drivers import BaseImageToImageGenerationDriver
+from griptape.rules import Ruleset
 
 
 @define
-class ImageModificationEngine:
-    image_modification_driver: BaseImageModificationDriver = field(kw_only=True)
+class ImageToImageGenerationEngine:
+    image_to_image_generation_driver: BaseImageToImageGenerationDriver = field(kw_only=True)
 
     def modify_image(
         self,
@@ -31,6 +31,6 @@ class ImageModificationEngine:
             for negative_ruleset in negative_rulesets:
                 negative_prompts += [rule.value for rule in negative_ruleset.rules]
 
-        return self.image_modification_driver.modify_image(
+        return self.image_to_image_generation_driver.image_to_image_generation(
             input_image, prompts, mask_image=mask_image, negative_prompts=negative_prompts
         )

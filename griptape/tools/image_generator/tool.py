@@ -5,8 +5,9 @@ from typing import Optional
 
 from attrs import define, field
 from schema import Schema, Literal
+
 from griptape.artifacts import ErrorArtifact, ImageArtifact
-from griptape.engines import ImageGenerationEngine
+from griptape.engines import TextToImageGenerationEngine
 from griptape.tools import BaseTool
 from griptape.utils.decorators import activity
 
@@ -21,7 +22,7 @@ class ImageGenerator(BaseTool):
 
     """
 
-    image_generation_engine: ImageGenerationEngine = field(kw_only=True)
+    image_generation_engine: TextToImageGenerationEngine = field(kw_only=True)
     output_dir: Optional[str] = field(default=None, kw_only=True)
 
     @activity(

@@ -5,8 +5,9 @@ from typing import Optional
 
 from attrs import define, field
 from schema import Schema, Literal
+
 from griptape.artifacts import ErrorArtifact, ImageArtifact
-from griptape.engines import ImageGenerationEngine, ImageModificationEngine
+from griptape.engines import ImageToImageGenerationEngine
 from griptape.loaders.image_loader import ImageLoader
 from griptape.tools import BaseTool
 from griptape.utils.decorators import activity
@@ -22,7 +23,7 @@ class ImageModifier(BaseTool):
 
     """
 
-    image_modification_engine: ImageModificationEngine = field(kw_only=True)
+    image_modification_engine: ImageToImageGenerationEngine = field(kw_only=True)
     output_dir: Optional[str] = field(default=None, kw_only=True)
 
     @activity(

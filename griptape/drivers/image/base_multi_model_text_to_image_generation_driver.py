@@ -6,14 +6,13 @@ from typing import Optional, TYPE_CHECKING
 from attr import field, define
 
 from griptape.artifacts import ImageArtifact
-from .base_image_generation_driver import BaseImageGenerationDriver
 
 if TYPE_CHECKING:
-    from griptape.drivers import BaseImageGenerationModelDriver
+    from griptape.drivers import BaseTextToImageGenerationDriver, BaseTextToImageGenerationModelDriver
 
 
 @define
-class BaseMultiModelImageGenerationDriver(BaseImageGenerationDriver, ABC):
+class BaseMultiModelTextToImageGenerationDriver(BaseTextToImageGenerationDriver, ABC):
     """Image Generation Driver for platforms like Amazon Bedrock that host many LLM models.
 
     Instances of this Image Generation Driver require a Image Generation Model Driver which is used to structure the
@@ -24,7 +23,7 @@ class BaseMultiModelImageGenerationDriver(BaseImageGenerationDriver, ABC):
         image_generation_model_driver: Image Generation Model Driver to use.
     """
 
-    image_generation_model_driver: BaseImageGenerationModelDriver = field(kw_only=True)
+    image_generation_model_driver: BaseTextToImageGenerationModelDriver = field(kw_only=True)
 
     @abstractmethod
     def try_generate_image(self, prompts: list[str], negative_prompts: Optional[list[str]] = None) -> ImageArtifact:

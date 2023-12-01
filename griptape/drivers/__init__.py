@@ -3,22 +3,22 @@ from .embedding.base_embedding_driver import BaseEmbeddingDriver
 from .embedding.bedrock_titan_embedding_driver import BedrockTitanEmbeddingDriver
 from .embedding.openai_embedding_driver import OpenAiEmbeddingDriver
 from .image.amazon_bedrock_image_generation_driver import AmazonBedrockImageGenerationDriver
-from .image.amazon_bedrock_stable_diffusion_image_generation_driver import (
-    AmazonBedrockStableDiffusionImageGenerationDriver,
-)
-from .image.base_image_driver import BaseImageDriver
 from .image.base_image_generation_driver import BaseImageGenerationDriver
-from .image.base_image_modification_driver import BaseImageModificationDriver
-from .image.base_multi_model_image_generation_driver import BaseMultiModelImageGenerationDriver
+from .image.base_image_to_image_generation_driver import BaseImageToImageGenerationDriver
+from .image.base_multi_model_image_to_image_generation_driver import BaseMultiModelImageToImageGenerationDriver
+from .image.base_multi_model_text_to_image_generation_driver import BaseMultiModelTextToImageGenerationDriver
+from .image.base_text_to_image_generation_driver import BaseTextToImageGenerationDriver
 from .image.leonardo_image_generation_driver import LeonardoImageGenerationDriver
 from .image.openai_dalle_image_generation_driver import OpenAiDalleImageGenerationDriver
-from .image_generation_model.amazon_bedrock_stable_diffusion_image_generation_model_driver import (
+from .image_model.amazon_bedrock_stable_diffusion_image_generation_model_driver import (
     AmazonBedrockStableDiffusionImageGenerationModelDriver,
 )
-from .image_generation_model.amazon_bedrock_titan_image_generation_model_driver import (
-    AmazonBedrockTitanImageGenerationModelDriver,
-)
-from .image_generation_model.base_image_generation_model_driver import BaseImageGenerationModelDriver
+from .image_model.amazon_bedrock_titan_image_generation_model_driver import AmazonBedrockTitanImageGenerationModelDriver
+from .image_model.base_image_generation_model_driver import BaseImageGenerationModelDriver
+from .image_model.base_image_to_image_generation_model_driver import BaseImageToImageGenerationModelDriver
+from .image_model.base_image_to_image_generation_model_driver import BaseImageToImageGenerationModelDriver
+from .image_model.base_text_to_image_generation_model_driver import BaseTextToImageGenerationModelDriver
+from .image_model.base_text_to_image_generation_model_driver import BaseTextToImageGenerationModelDriver
 from .memory.conversation.amazon_dynamodb_conversation_memory_driver import AmazonDynamoDbConversationMemoryDriver
 from .memory.conversation.base_conversation_memory_driver import BaseConversationMemoryDriver
 from .memory.conversation.local_conversation_memory_driver import LocalConversationMemoryDriver
@@ -93,14 +93,17 @@ __all__ = [
     "BedrockTitanPromptModelDriver",
     "BedrockClaudePromptModelDriver",
     "BedrockJurassicPromptModelDriver",
-    "BaseImageDriver",
     "BaseImageGenerationDriver",
-    "BaseMultiModelImageGenerationDriver",
-    "BaseImageModificationDriver",
+    "BaseTextToImageGenerationDriver",
+    "BaseImageToImageGenerationDriver",
+    "BaseImageGenerationModelDriver",
+    "BaseTextToImageGenerationModelDriver",
+    "BaseImageToImageGenerationModelDriver",
+    "BaseMultiModelTextToImageGenerationDriver",
+    "BaseMultiModelImageToImageGenerationDriver",
     "OpenAiDalleImageGenerationDriver",
     "LeonardoImageGenerationDriver",
     "AmazonBedrockImageGenerationDriver",
-    "BaseImageGenerationModelDriver",
     "AmazonBedrockTitanImageGenerationModelDriver",
     "AmazonBedrockStableDiffusionImageGenerationModelDriver",
 ]

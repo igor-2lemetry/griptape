@@ -6,15 +6,17 @@ from typing import Optional, TYPE_CHECKING, Any
 from attr import define, field, Factory
 
 from griptape.artifacts import ImageArtifact
-from griptape.drivers import BaseMultiModelImageGenerationDriver
 from griptape.utils import import_optional_dependency
 
 if TYPE_CHECKING:
     import boto3
+    from griptape.drivers import BaseMultiModelImageToImageGenerationDriver, BaseMultiModelTextToImageGenerationDriver
 
 
 @define
-class AmazonBedrockImageGenerationDriver(BaseMultiModelImageGenerationDriver):
+class AmazonBedrockImageGenerationDriver(
+    BaseMultiModelTextToImageGenerationDriver, BaseMultiModelImageToImageGenerationDriver
+):
     """Driver for image generation models provided by Amazon Bedrock.
 
     Attributes:
@@ -52,7 +54,7 @@ class AmazonBedrockImageGenerationDriver(BaseMultiModelImageGenerationDriver):
         try:
             image_bytes = self.image_generation_model_driver.get_generated_image(response_body)
         except Exception as e:
-            raise ValueError(f"Image generation failed: {e}")
+            raise ValueError(f"Text to image generation failed: {e}")
 
         return ImageArtifact(
             prompt=", ".join(prompts),
@@ -60,5 +62,36 @@ class AmazonBedrockImageGenerationDriver(BaseMultiModelImageGenerationDriver):
             mime_type="image/png",
             width=self.image_width,
             height=self.image_height,
+            model=self.model,
+        )
+
+    def try_image_to_image_generation(
+        self,
+        image: ImageArtifact,
+        prompts: list[str],
+        mask_image: Optional[ImageArtifact] = None,
+        negative_prompts: Optional[list[str]] = None,
+    ) -> ImageArtifact:
+        request = self.image_modification_model_driver.image_to_image_request_parameters(
+            prompts, image=image, mask_image=mask_image, negative_prompts=negative_prompts, seed=self.seed
+        )
+
+        response = self.bedrock_client.invoke_model(
+            body=json.dumps(request), modelId=self.model, accept="application/json", contentType="application/json"
+        )
+
+        response_body = json.loads(response.get("body").read())
+
+        try:
+            image_bytes = self.image_modification_model_driver.get_generated_image(response_body)
+        except Exception as e:
+            raise ValueError(f"Image to image generation failed: {e}")
+
+        return ImageArtifact(
+            prompt=", ".join(prompts),
+            value=image_bytes,
+            mime_type="image/png",
+            width=image.width,
+            height=image.height,
             model=self.model,
         )

@@ -1,13 +1,16 @@
+from __future__ import annotations
+
 import base64
-from typing import Optional
+from typing import Optional, TYPE_CHECKING
 
 from attr import field, define
 
-from griptape.drivers import BaseImageGenerationModelDriver
+if TYPE_CHECKING:
+    from griptape.drivers import BaseTextToImageGenerationModelDriver
 
 
 @define
-class AmazonBedrockTitanImageGenerationModelDriver(BaseImageGenerationModelDriver):
+class AmazonBedrockTitanImageGenerationModelDriver(BaseTextToImageGenerationModelDriver):
     task_type: str = field(default="TEXT_IMAGE", kw_only=True)
     quality: str = field(default="standard", kw_only=True)
     cfg_scale: int = field(default=7, kw_only=True)

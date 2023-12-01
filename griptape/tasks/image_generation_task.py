@@ -5,8 +5,9 @@ from os import path
 from typing import Optional
 
 from attr import define, field
+
 from griptape.artifacts import ImageArtifact
-from griptape.engines import ImageGenerationEngine
+from griptape.engines import TextToImageGenerationEngine
 from griptape.rules import Rule, Ruleset
 from griptape.tasks import BaseTextInputTask
 
@@ -23,7 +24,7 @@ class ImageGenerationTask(BaseTextInputTask):
 
     NEGATIVE_RULESET_NAME = "Negative Ruleset"
 
-    image_generation_engine: ImageGenerationEngine = field(kw_only=True)
+    image_generation_engine: TextToImageGenerationEngine = field(kw_only=True)
     output_dir: Optional[str] = field(default=None, kw_only=True)
     output_file: Optional[str] = field(default=None, kw_only=True)
     negative_rulesets: list[Ruleset] = field(factory=list, kw_only=True)
