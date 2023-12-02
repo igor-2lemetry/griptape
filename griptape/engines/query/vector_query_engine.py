@@ -32,6 +32,8 @@ class VectorQueryEngine(BaseQueryEngine):
     ) -> TextArtifact:
         tokenizer = self.prompt_driver.tokenizer
         result = self.vector_store_driver.query(query, top_n, namespace)
+        print(">>>>>")
+        print(result)
         artifacts = [
             a for a in [BaseArtifact.from_json(r.meta["artifact"]) for r in result] if isinstance(a, TextArtifact)
         ]
