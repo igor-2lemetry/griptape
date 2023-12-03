@@ -2,6 +2,7 @@ from __future__ import annotations
 from typing import Optional, Tuple, TYPE_CHECKING
 from griptape import utils
 import logging
+from griptape.artifacts import TextArtifact
 from griptape.utils import import_optional_dependency
 from griptape.drivers import BaseVectorStoreDriver
 from attr import define, field, Factory
@@ -158,7 +159,8 @@ class OpenSearchVectorStoreDriver(BaseVectorStoreDriver):
                 namespace=hit["_source"].get("namespace") if namespace else None,
                 score=hit["_score"],
                 vector=hit["_source"].get("vector") if include_vectors else None,
-                meta=hit["_source"].get("metadata") if include_metadata else None,
+#                 meta=hit["_source"].get("metadata") if include_metadata else None,
+                meta={"artifact": TextArtifact(hit["_source"].get("text")).to_json()}
             )
             for hit in response["hits"]["hits"]
         ]
