@@ -24,11 +24,17 @@ class AmazonBedrockPromptDriver(BaseMultiModelPromptDriver):
         if isinstance(model_input, dict):
             payload.update(model_input)
 
+        print(">>>>> PAYLOAD TO BEDROCK")
+        print(json.dumps(payload))
+
         response = self.bedrock_client.invoke_model(
             modelId=self.model, contentType="application/json", accept="application/json", body=json.dumps(payload)
         )
 
         response_body = response["body"].read()
+
+        print(">>>>> RESPONSE FROM BEDROCK")
+        print(response_body)
 
         if response_body:
             return self.prompt_model_driver.process_output(response_body)

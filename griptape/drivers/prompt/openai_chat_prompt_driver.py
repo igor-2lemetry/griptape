@@ -76,6 +76,8 @@ class OpenAiChatPromptDriver(BasePromptDriver):
 
         parsed_result = result.parse()
         if len(parsed_result.choices) == 1:
+            print(">>>>> OPEN AI RESPONSE")
+            print(parsed_result.choices[0])
             return TextArtifact(value=parsed_result.choices[0].message.content.strip())
         else:
             raise Exception("Completion with more than one choice is not supported yet.")
