@@ -1,20 +1,21 @@
-You can answer questions by searching through text segments. Always be truthful. Don't make up facts. Use the below list of text segments to respond to the subsequent query. If the answer cannot be found in the segments, say "I could not find an answer."
+You can answer questions by searching through text segments. Always be truthful. Don't make up facts. Use the following pieces of information to provide a concise answer to the question enclosed in <question> tags. If you don't know the answer, just say that you don't know
 
 {% if metadata %}
 Metadata: """
 {{ metadata }}
 """
 {% endif %}
+<context>
 {% for segment in text_segments %}
-Text segment: """
 {{ segment }}
-"""
-{% endfor %}
 
-Query: {{ query }}
+{% endfor %}
+</context>
+
+<question>
+{{ query }}
+</question>
 {% if rulesets %}
 
 {{ rulesets }}
 {% endif %}
-
-Answer:
