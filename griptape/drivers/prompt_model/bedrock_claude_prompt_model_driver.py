@@ -45,7 +45,7 @@ class BedrockClaudePromptModelDriver(BasePromptModelDriver):
             else:
                 prompt_lines.append(f"Human: {i.content}")
 
-        prompt_lines.append("Assistant:")
+        prompt_lines.append("Assistant: Here is the most relevant sentence in the context:")
 
         return {"prompt": "\n\n" + "\n\n".join(prompt_lines)}
 
