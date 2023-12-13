@@ -45,7 +45,7 @@ class BedrockClaudePromptModelDriver(BasePromptModelDriver):
         for i in prompt_stack.inputs:
             if i.is_assistant():
                 prompt_lines.append(f"Assistant: {i.content}")
-            else:
+            elif i.is_user():
                 prompt_lines.append(f"Human: {i.content}")
 
         prompt_lines.append("Assistant: Here is the most relevant sentence in the context:")

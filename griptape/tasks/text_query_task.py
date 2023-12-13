@@ -12,6 +12,24 @@ class TextQueryTask(PromptTask):
     loader: TextLoader = field(default=Factory(lambda: TextLoader()), kw_only=True)
     namespace: Optional[str] = field(default=None, kw_only=True)
 
+    @property
+    def prompt_stack(self) -> PromptStack:
+        stack = PromptStack()
+        memory = self.structure.conversation_memory
+
+        stack.add_system_input(self.generate_system_template(self))
+
+#         stack.add_user_input(self.input.to_text())
+
+        if self.output:
+            stack.add_assistant_input(self.output.to_text())
+
+        if memory:
+            # inserting at index 1 to place memory right after system prompt
+            stack.add_conversation_memory(memory, 1)
+
+        return stack
+
     def run(self) -> TextArtifact:
         return self.query_engine.query(
             self.input.to_text(), namespace=self.namespace, rulesets=self.all_rulesets, prompt_stack=self.prompt_stack
