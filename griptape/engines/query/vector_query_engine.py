@@ -29,6 +29,7 @@ class VectorQueryEngine(BaseQueryEngine):
         top_n: Optional[int] = None,
         namespace: Optional[str] = None,
         rulesets: Optional[str] = None,
+        prompt_stack: Optional[PromptStack] = None,
     ) -> TextArtifact:
         tokenizer = self.prompt_driver.tokenizer
         result = self.vector_store_driver.query(query, top_n, namespace)
@@ -65,7 +66,12 @@ class VectorQueryEngine(BaseQueryEngine):
 
                 break
 
-        return self.prompt_driver.run(PromptStack(inputs=[PromptStack.Input(message, role=PromptStack.USER_ROLE)]))
+        if prompt_stack is None:
+            prompt_stack = PromptStack()
+        prompt_stack.add_user_input(message)
+
+        return self.prompt_driver.run(prompt_stack=prompt_stack)
+#         return self.prompt_driver.run(PromptStack(inputs=[PromptStack.Input(message, role=PromptStack.USER_ROLE)]))
 
     def upsert_text_artifact(self, artifact: TextArtifact, namespace: Optional[str] = None) -> str:
         result = self.vector_store_driver.upsert_text_artifact(artifact, namespace=namespace)
