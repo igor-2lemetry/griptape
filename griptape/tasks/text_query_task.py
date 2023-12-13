@@ -4,6 +4,7 @@ from griptape.artifacts import TextArtifact
 from griptape.engines import BaseQueryEngine
 from griptape.loaders import TextLoader
 from griptape.tasks import PromptTask
+from griptape.utils import PromptStack
 
 
 @define
