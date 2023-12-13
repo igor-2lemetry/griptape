@@ -46,7 +46,7 @@ class AnthropicPromptDriver(BasePromptDriver):
             else:
                 prompt_lines.append(f"Human: {i.content}")
 
-        prompt_lines.append("Assistant: Here is the most relevant sentence in the context:")
+        prompt_lines.append("Assistant:")
 
         return "\n\n" + "\n\n".join(prompt_lines)
 

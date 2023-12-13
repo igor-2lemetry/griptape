@@ -39,6 +39,9 @@ class BedrockClaudePromptModelDriver(BasePromptModelDriver):
     def prompt_stack_to_model_input(self, prompt_stack: PromptStack) -> dict:
         prompt_lines = []
 
+        print(">>>>> ADDING PROMPT STACK")
+        print(prompt_stack.inputs)
+
         for i in prompt_stack.inputs:
             if i.is_assistant():
                 prompt_lines.append(f"Assistant: {i.content}")

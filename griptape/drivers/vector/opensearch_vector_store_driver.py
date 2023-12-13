@@ -137,6 +137,8 @@ class OpenSearchVectorStoreDriver(BaseVectorStoreDriver):
             A list of BaseVectorStoreDriver.QueryResult objects, each encapsulating the retrieved vector, its similarity score, metadata, and namespace.
         """
         count = count if count else BaseVectorStoreDriver.DEFAULT_QUERY_COUNT
+        print(">>>>> QUERY for SEARCH")
+        print(query)
         vector = self.embedding_driver.embed_string(query)
         # Base k-NN query
         query_body = {"size": count, "query": {"knn": {field_name: {"vector": vector, "k": count}}}}
