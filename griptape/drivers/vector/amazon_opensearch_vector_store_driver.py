@@ -21,7 +21,7 @@ class AmazonOpenSearchVectorStoreDriver(OpenSearchVectorStoreDriver):
 
     session: Optional[Session] = field(kw_only=True)
 
-    service: Optional[str] = field(default="es" kw_only=True) # "aoss" for OpenSearch Serverless
+    service: Optional[str] = field(default="es", kw_only=True) # "aoss" for OpenSearch Serverless
 
     http_auth: Optional[str | Tuple[str, str]] = field(
         default=Factory(
