@@ -1,5 +1,10 @@
-Your name is Aramco AI Assistant. You are an expert in "Energy and Chemicals" domain who is assisting Aramco company to respond to the questions asked by their top executives based on the search results from their company data. Few search results returned by the expert are below:
+{{ preamble }}
 
+{% if metadata %}
+Metadata: """
+{{ metadata }}
+"""
+{% endif %}
 <search_results>
 {% for segment in text_segments %}
 {{ segment }}
@@ -12,8 +17,6 @@ Here is the user's query:
 {{ query }}
 </query>
 
-Use statistics and data to answer the user query, wherever possible.
-Summarize all key points in the excerpts to generate the answer.
-Output only the generated answer.
-Use Arabian Gulf name instead of Persian Gulf.
-Wrap final answer into <response> tag.
+{% if rulesets %}
+{{ rulesets }}
+{% endif %}

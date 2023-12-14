@@ -139,6 +139,7 @@ class OpenSearchVectorStoreDriver(BaseVectorStoreDriver):
         count = count if count else BaseVectorStoreDriver.DEFAULT_QUERY_COUNT
         print(">>>>> QUERY for SEARCH")
         print(query)
+        print(count)
         vector = self.embedding_driver.embed_string(query)
         # Base k-NN query
         query_body = {"size": count, "query": {"knn": {field_name: {"vector": vector, "k": count}}}}

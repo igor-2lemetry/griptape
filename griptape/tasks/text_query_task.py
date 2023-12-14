@@ -12,6 +12,8 @@ class TextQueryTask(PromptTask):
     query_engine: BaseQueryEngine = field(kw_only=True)
     loader: TextLoader = field(default=Factory(lambda: TextLoader()), kw_only=True)
     namespace: Optional[str] = field(default=None, kw_only=True)
+    top_n: Optional[int] = field(default=None, kw_only=True)
+    preamble: Optional[str] = field(default=None, kw_only=True)
 
     @property
     def prompt_stack(self) -> PromptStack:
@@ -33,5 +35,5 @@ class TextQueryTask(PromptTask):
 
     def run(self) -> TextArtifact:
         return self.query_engine.query(
-            self.input.to_text(), namespace=self.namespace, rulesets=self.all_rulesets, prompt_stack=self.prompt_stack
+            self.input.to_text(), namespace=self.namespace, rulesets=self.all_rulesets, prompt_stack=self.prompt_stack, top_n=self.top_n, preamble=self.preamble
         )

@@ -19,7 +19,9 @@ class AmazonOpenSearchVectorStoreDriver(OpenSearchVectorStoreDriver):
         client: An optional OpenSearch client to use. Defaults to a new client using the host, port, http_auth, use_ssl, and verify_certs attributes.
     """
 
-    session: Session = field(kw_only=True)
+    session: Optional[Session] = field(kw_only=True)
+
+    service: Optional[str] = field(default="es" kw_only=True) # "aoss" for OpenSearch Serverless
 
     http_auth: Optional[str | Tuple[str, str]] = field(
         default=Factory(
@@ -27,7 +29,7 @@ class AmazonOpenSearchVectorStoreDriver(OpenSearchVectorStoreDriver):
                 self.session.get_credentials().access_key,
                 self.session.get_credentials().secret_key,
                 self.session.region_name,
-                "es",
+                self.service,
             ),
             takes_self=True,
         )

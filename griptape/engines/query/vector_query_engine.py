@@ -29,6 +29,7 @@ class VectorQueryEngine(BaseQueryEngine):
         top_n: Optional[int] = None,
         namespace: Optional[str] = None,
         rulesets: Optional[str] = None,
+        preamble: Optional[str] = "You can answer questions by searching through text segments. Always be truthful. Don't make up facts. Use the below list of text segments to respond to the subsequent query. If the answer cannot be found in the segments, say 'I could not find an answer'.",
         prompt_stack: Optional[PromptStack] = None,
     ) -> TextArtifact:
         tokenizer = self.prompt_driver.tokenizer
@@ -45,6 +46,7 @@ class VectorQueryEngine(BaseQueryEngine):
             text_segments.append(artifact.value)
 
             message = self.template_generator.render(
+                preamble=preamble,
                 metadata=metadata,
                 query=query,
                 text_segments=text_segments,
@@ -58,6 +60,7 @@ class VectorQueryEngine(BaseQueryEngine):
                 text_segments.pop()
 
                 message = self.template_generator.render(
+                    preamble=preamble,
                     metadata=metadata,
                     query=query,
                     text_segments=text_segments,
@@ -71,7 +74,6 @@ class VectorQueryEngine(BaseQueryEngine):
         prompt_stack.add_user_input(message)
 
         return self.prompt_driver.run(prompt_stack=prompt_stack)
-#         return self.prompt_driver.run(PromptStack(inputs=[PromptStack.Input(message, role=PromptStack.USER_ROLE)]))
 
     def upsert_text_artifact(self, artifact: TextArtifact, namespace: Optional[str] = None) -> str:
         result = self.vector_store_driver.upsert_text_artifact(artifact, namespace=namespace)
