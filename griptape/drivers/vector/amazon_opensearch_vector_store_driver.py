@@ -15,13 +15,14 @@ class AmazonOpenSearchVectorStoreDriver(OpenSearchVectorStoreDriver):
 
     Attributes:
         session: The boto3 session to use.
+        service: Service name for AWS Signature v4. Values can be 'es' or 'aoss' for for OpenSearch Serverless. Defaults to 'es'.
         http_auth: The HTTP authentication credentials to use. Defaults to using credentials in the boto3 session.
         client: An optional OpenSearch client to use. Defaults to a new client using the host, port, http_auth, use_ssl, and verify_certs attributes.
     """
 
-    session: Optional[Session] = field(kw_only=True)
+    session: Optional[Session] = field(default=None, kw_only=True)
 
-    service: Optional[str] = field(default="es", kw_only=True) # "aoss" for OpenSearch Serverless
+    service: Optional[str] = field(default="es", kw_only=True)
 
     http_auth: Optional[str | Tuple[str, str]] = field(
         default=Factory(
