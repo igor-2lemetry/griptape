@@ -149,10 +149,10 @@ class OpenSearchVectorStoreDriver(BaseVectorStoreDriver):
             "bool" : {
               "should" : [
                 { "script_score": {
-                  "query": { "knn": { "vector": { "vector": vector, "k": count } } }, "script": { "source": "_score" }
+                  "query": { "knn": { "vector": { "vector": vector, "k": count } } }
                 } },
                 { "script_score": {
-                  "query": { "match": { "text": query } }, "script": { "source": "_score" }
+                  "query": { "match": { "text": query } }
                 } }
               ]
             }
