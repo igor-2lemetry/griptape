@@ -144,15 +144,33 @@ class OpenSearchVectorStoreDriver(BaseVectorStoreDriver):
         # Base k-NN query
 #         query_body = {"size": count, "query": {"knn": {field_name: {"vector": vector, "k": count}}}}
 
+#         query_body = {
+#           "query": {
+#             "bool" : {
+#               "should" : [
+#                 { "script_score": {
+#                   "query": { "knn": { "vector": { "vector": vector, "k": count } } }
+#                 } },
+#                 { "script_score": {
+#                   "query": { "match": { "text": query } }
+#                 } }
+#               ]
+#             }
+#           }
+#         }
+
         query_body = {
+          "size": count,
           "query": {
             "bool" : {
               "should" : [
                 { "script_score": {
-                  "query": { "knn": { "vector": { "vector": vector, "k": count } } }
+                  "query": { "knn": { "vector": { "vector": vector, "k": count } } },
+                  "script": { "source": "knn_score", "lang": "knn", "params": { "field": "vector", "query_value": vector, "space_type": "cosinesimil" } }
                 } },
                 { "script_score": {
-                  "query": { "match": { "text": query } }
+                  "query": { "match": { "text": query } },
+                  "script": { "source": "knn_score", "lang": "knn", "params": { "field": "vector", "query_value": vector, "space_type": "cosinesimil" } }
                 } }
               ]
             }
