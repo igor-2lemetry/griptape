@@ -15,8 +15,8 @@ class BaseEmbeddingDriver(ExponentialBackoffMixin, ABC):
         dimensions: Vector dimensions.
     """
 
-    dimensions: int = field(kw_only=True)
-    tokenizer: BaseTokenizer = field(kw_only=True)
+    dimensions: int = field(default=None, kw_only=True)
+    tokenizer: BaseTokenizer = field(default=None, kw_only=True)
     chunker: BaseChunker = field(init=False)
 
     def __attrs_post_init__(self) -> None:
