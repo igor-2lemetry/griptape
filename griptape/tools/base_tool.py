@@ -37,7 +37,7 @@ class BaseTool(ActivityMixin, ABC):
 
     name: str = field(default=Factory(lambda self: self.class_name, takes_self=True), kw_only=True)
     input_memory: Optional[list[TaskMemory]] = field(default=None, kw_only=True)
-    output_memory: Optional[dict[str, list[TaskMemory]]] = field(default=None, kw_only=True)
+    output_memory: dict[str, Optional[list[TaskMemory]]] = field(default=None, kw_only=True)
     install_dependencies_on_init: bool = field(default=True, kw_only=True)
     dependencies_install_directory: Optional[str] = field(default=None, kw_only=True)
     verbose: bool = field(default=False, kw_only=True)
@@ -47,12 +47,14 @@ class BaseTool(ActivityMixin, ABC):
         if self.install_dependencies_on_init:
             self.install_dependencies(os.environ.copy())
 
-    @output_memory.validator
-    def validate_output_memory(self, _, output_memory: Optional[dict[str, list[TaskMemory]]]) -> None:
+    @output_memory.validator  # pyright: ignore
+    def validate_output_memory(self, _, output_memory: dict[str, Optional[list[TaskMemory]]]) -> None:
         if output_memory:
             for activity_name, memory_list in output_memory.items():
                 if not self.find_activity(activity_name):
                     raise ValueError(f"activity {activity_name} doesn't exist")
+                if memory_list is None:
+                    raise ValueError(f"memory list for activity '{activity_name}' can't be None")
 
                 output_memory_names = [memory.name for memory in memory_list]
 
@@ -73,7 +75,7 @@ class BaseTool(ActivityMixin, ABC):
 
     @property
     def manifest(self) -> dict:
-        with open(self.manifest_path, "r") as yaml_file:
+        with open(self.manifest_path) as yaml_file:
             return yaml.safe_load(yaml_file)
 
     @property
@@ -92,7 +94,9 @@ class BaseTool(ActivityMixin, ABC):
                 {
                     Literal("name"): self.name,
                     Literal("path", description=self.activity_description(activity)): self.activity_name(activity),
-                    Literal("input"): {"values": activity.config["schema"]} if self.activity_schema(activity) else {},
+                    Literal("input"): {"values": getattr(activity, "config")["schema"]}
+                    if self.activity_schema(activity)
+                    else {},
                 }
             )
             for activity in self.activities()
@@ -126,7 +130,8 @@ class BaseTool(ActivityMixin, ABC):
     def after_run(self, activity: Callable, subtask: ActionSubtask, value: BaseArtifact) -> BaseArtifact:
         if value:
             if self.output_memory:
-                for memory in activity.__self__.output_memory.get(activity.name, []):
+                output_memories = self.output_memory[getattr(activity, "name")] or []
+                for memory in output_memories:
                     value = memory.process_output(activity, subtask, value)
 
                 if isinstance(value, BaseArtifact):

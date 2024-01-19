@@ -42,7 +42,7 @@ class TextLoader(BaseLoader):
         artifacts = []
 
         if isinstance(text, Path):
-            with open(text, "r", encoding=self.encoding) as file:
+            with open(text, encoding=self.encoding) as file:
                 body = file.read()
         else:
             body = text

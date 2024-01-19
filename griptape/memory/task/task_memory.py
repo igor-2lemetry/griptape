@@ -13,12 +13,12 @@ if TYPE_CHECKING:
 @define
 class TaskMemory(ActivityMixin):
     name: str = field(default=Factory(lambda self: self.__class__.__name__, takes_self=True), kw_only=True)
-    artifact_storages: dict[Type, BaseArtifactStorage] = field(factory=dict, kw_only=True)
+    artifact_storages: dict[type, BaseArtifactStorage] = field(factory=dict, kw_only=True)
     namespace_storage: dict[str, BaseArtifactStorage] = field(factory=dict, kw_only=True)
     namespace_metadata: dict[str, Any] = field(factory=dict, kw_only=True)
 
-    @artifact_storages.validator
-    def validate_artifact_storages(self, _, artifact_storage: dict[Type, BaseArtifactStorage]) -> None:
+    @artifact_storages.validator  # pyright: ignore
+    def validate_artifact_storages(self, _, artifact_storage: dict[type, BaseArtifactStorage]) -> None:
         seen_types = []
 
         for storage in artifact_storage.values():
@@ -67,7 +67,7 @@ class TaskMemory(ActivityMixin):
                         ActionSubtaskMetaEntry(thought=subtask.thought, action=subtask.action_to_json(), answer=output)
                     )
 
-                return InfoArtifact(output)
+                return InfoArtifact(output, name=namespace)
         else:
             return InfoArtifact("tool output is empty")
 

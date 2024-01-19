@@ -17,7 +17,7 @@ class PromptTask(BaseTextInputTask):
         default=Factory(lambda self: self.default_system_template_generator, takes_self=True), kw_only=True
     )
 
-    output: Optional[TextArtifact | ErrorArtifact | InfoArtifact] = field(default=None, init=False)
+    output: TextArtifact | ErrorArtifact | Optional[InfoArtifact] = field(default=None, init=False)
 
     @property
     def prompt_stack(self) -> PromptStack:
@@ -42,7 +42,7 @@ class PromptTask(BaseTextInputTask):
             rulesets=J2("rulesets/rulesets.j2").render(rulesets=self.all_rulesets)
         )
 
-    def run(self) -> TextArtifact:
+    def run(self) -> TextArtifact | InfoArtifact | ErrorArtifact:
         self.output = self.active_driver().run(self.prompt_stack)
 
         return self.output

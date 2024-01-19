@@ -13,13 +13,16 @@ from .base_aws_client import BaseAwsClient
 from .aws_iam_client.tool import AwsIamClient
 from .aws_s3_client.tool import AwsS3Client
 from .computer.tool import Computer
-from .proxycurl_client.tool import ProxycurlClient
 from .base_google_client import BaseGoogleClient
 from .google_gmail.tool import GoogleGmailClient
 from .google_cal.tool import GoogleCalendarClient
 from .google_docs.tool import GoogleDocsClient
 from .google_drive.tool import GoogleDriveClient
 from .openweather_client.tool import OpenWeatherClient
+from .prompt_image_generation_client.tool import PromptImageGenerationClient
+from .variation_image_generation_client.tool import VariationImageGenerationClient
+from .inpainting_image_generation_client.tool import InpaintingImageGenerationClient
+from .outpainting_image_generation_client.tool import OutpaintingImageGenerationClient
 
 __all__ = [
     "BaseTool",
@@ -42,6 +45,9 @@ __all__ = [
     "DateTime",
     "TaskMemoryClient",
     "Computer",
-    "ProxycurlClient",
     "OpenWeatherClient",
+    "PromptImageGenerationClient",
+    "VariationImageGenerationClient",
+    "InpaintingImageGenerationClient",
+    "OutpaintingImageGenerationClient",
 ]

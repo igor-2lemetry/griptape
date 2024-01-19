@@ -26,7 +26,7 @@ class OpenSearchVectorStoreDriver(BaseVectorStoreDriver):
 
     host: str = field(kw_only=True)
     port: int = field(default=443, kw_only=True)
-    http_auth: Optional[str | Tuple[str, str]] = field(default=None, kw_only=True)
+    http_auth: str | tuple[str, Optional[str]] = field(default=None, kw_only=True)
     use_ssl: bool = field(default=True, kw_only=True)
     verify_certs: bool = field(default=True, kw_only=True)
     index_name: str = field(kw_only=True)
@@ -231,3 +231,6 @@ class OpenSearchVectorStoreDriver(BaseVectorStoreDriver):
                 self.client.indices.create(index=self.index_name, body=mapping)
         except Exception as e:
             logging.error(f"Error while handling index: {e}")
+
+    def delete_vector(self, vector_id: str):
+        raise NotImplementedError(f"{self.__class__.__name__} does not support deletion.")

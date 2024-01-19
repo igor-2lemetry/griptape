@@ -1,16 +1,19 @@
 from __future__ import annotations
+
 import uuid
 from abc import ABC, abstractmethod
 from enum import Enum
-from typing import TYPE_CHECKING, Optional
+from typing import TYPE_CHECKING, Any, Optional
+
 from attr import define, field, Factory
+
 from griptape.events import StartTaskEvent, FinishTaskEvent
 from griptape.artifacts import ErrorArtifact
 
 if TYPE_CHECKING:
     from griptape.artifacts import BaseArtifact
     from griptape.structures import Structure
-    from griptape.memory.meta import BaseMetaMemory
+    from griptape.memory.meta import BaseMetaEntry
 
 
 @define
@@ -28,10 +31,11 @@ class BaseTask(ABC):
 
     output: Optional[BaseArtifact] = field(default=None, init=False)
     structure: Optional[Structure] = field(default=None, init=False)
+    context: dict[str, Any] = field(factory=dict, kw_only=True)
 
     @property
     @abstractmethod
-    def input(self) -> BaseArtifact:
+    def input(self) -> BaseArtifact | tuple[BaseArtifact, ...]:
         ...
 
     @property
@@ -43,7 +47,7 @@ class BaseTask(ABC):
         return [self.structure.find_task(child_id) for child_id in self.child_ids]
 
     @property
-    def meta_memories(self) -> list[BaseMetaMemory]:
+    def meta_memories(self) -> list[BaseMetaEntry]:
         if self.structure and self.structure.meta_memory:
             if self.max_meta_memory_entries:
                 return self.structure.meta_memory.entries[: self.max_meta_memory_entries]
@@ -107,3 +111,14 @@ class BaseTask(ABC):
     @abstractmethod
     def run(self) -> BaseArtifact:
         ...
+
+    @property
+    def full_context(self) -> dict[str, Any]:
+        if self.structure:
+            structure_context = self.structure.context(self)
+
+            structure_context.update(self.context)
+
+            return structure_context
+        else:
+            return {}

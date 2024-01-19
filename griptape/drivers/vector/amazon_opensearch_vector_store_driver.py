@@ -24,7 +24,7 @@ class AmazonOpenSearchVectorStoreDriver(OpenSearchVectorStoreDriver):
 
     service: Optional[str] = field(default="es", kw_only=True)
 
-    http_auth: Optional[str | Tuple[str, str]] = field(
+    http_auth: str | tuple[str, Optional[str]] = field(
         default=Factory(
             lambda self: import_optional_dependency("requests_aws4auth").AWS4Auth(
                 self.session.get_credentials().access_key,

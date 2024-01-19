@@ -3,6 +3,8 @@
 [![PyPI Version](https://img.shields.io/pypi/v/griptape.svg)](https://pypi.python.org/pypi/griptape)
 [![Tests](https://github.com/griptape-ai/griptape/actions/workflows/unit-tests.yml/badge.svg)](https://github.com/griptape-ai/griptape/actions/workflows/unit-tests.yml)
 [![Docs](https://readthedocs.org/projects/griptape/badge/)](https://griptape.readthedocs.io/)
+[![Checked with pyright](https://microsoft.github.io/pyright/img/pyright_badge.svg)](https://microsoft.github.io/pyright/)
+[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 [![Griptape Discord](https://dcbadge.vercel.app/api/server/gnWRz88eym?compact=true&style=flat)](https://discord.gg/gnWRz88eym)
 
 **Griptape** is a modular Python framework for building AI-powered applications that connect securely to your enterprise data and APIs. It offers developers the ability to maintain control and flexibility at every step.
@@ -107,7 +109,7 @@ The important thing to note here is that no matter how big the webpage is it can
 
 All tools have the `off_prompt` property enabled be default. Disabling it (`off_prompt=False`) will force the framework to return all tool outputs directly to the LLM prompt. `TaskMemoryClient` requires the user to set this property explicitly for usability reasons. In the above example, we set `off_prompt` to `True`, which means that the LLM can never see the data it manipulates, but can send it to other tools.
 
-[Check out our docs](https://docs.griptape.ai/griptape-framework/structures/prompt-drivers/) to learn more about how to use Griptape with other LLM providers like Anthropic, Claude, Hugging Face, and Azure.
+[Check out our docs](https://docs.griptape.ai/latest/griptape-framework/structures/prompt-drivers/) to learn more about how to use Griptape with other LLM providers like Anthropic, Claude, Hugging Face, and Azure.
 
 ## Versioning
 
@@ -120,6 +122,12 @@ Thank you for considering contributing to Griptape! Before you start, please rea
 ### Submitting Issues
 
 If you have identified a bug, want to propose a new feature, or have a question, please submit an issue through our public [issue tracker](https://github.com/griptape-ai/griptape/issues). Before submitting a new issue, please check the existing issues to ensure it hasn't been reported or discussed before.
+
+### New Griptape Tools
+
+Griptape's extensibility allows anyone to develop and distribute tools independently. With rare exceptions for tools providing broadly applicable functionality, new Griptape tools should be managed as their own projects and not submitted to the core framework. Pull requests for new tools (unless addressing an [existing issue](https://github.com/griptape-ai/griptape/issues)) will be closed.
+
+The [Griptape Tool Template](https://github.com/griptape-ai/tool-template) provides the recommended structure, step-by-step instructions, basic automation, and usage examples for new tools. In the Template, select **Use this template** then **Create a new repository** to begin a new tool project.
 
 ### Submitting Pull Requests
 

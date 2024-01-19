@@ -1,20 +1,20 @@
-from typing import Optional
+from typing import Optional, Sequence
 from attr import field, define
 from griptape.artifacts import BaseArtifact
 
 
 @define
 class ListArtifact(BaseArtifact):
-    value: list[BaseArtifact] = field(factory=list)
+    value: Sequence[BaseArtifact] = field(factory=list)
     item_separator: str = field(default="\n\n", kw_only=True)
 
-    @value.validator
+    @value.validator  # pyright: ignore
     def validate_value(self, _, value: list[BaseArtifact]) -> None:
         if len(value) > 0:
             first_type = type(value[0])
 
             if not all(isinstance(v, first_type) for v in value):
-                raise ValueError(f"list elements in 'value' are not the same type")
+                raise ValueError("list elements in 'value' are not the same type")
 
     @property
     def child_type(self) -> Optional[type]:
@@ -22,6 +22,9 @@ class ListArtifact(BaseArtifact):
             return type(self.value[0])
         else:
             return None
+
+    def __getitem__(self, key: int) -> BaseArtifact:
+        return self.value[key]
 
     def __bool__(self) -> bool:
         return len(self) > 0

@@ -33,6 +33,7 @@ class ActionSubtask(PromptTask):
         },
     )
 
+    _input: Optional[str] = field(default=None)
     parent_task_id: Optional[str] = field(default=None, kw_only=True)
     thought: Optional[str] = field(default=None, kw_only=True)
     action_name: Optional[str] = field(default=None, kw_only=True)
@@ -44,7 +45,7 @@ class ActionSubtask(PromptTask):
 
     @property
     def input(self) -> TextArtifact:
-        return TextArtifact(self.input_template)
+        return TextArtifact(self._input)
 
     @property
     def origin_task(self) -> Optional[ActionSubtaskOriginMixin]:

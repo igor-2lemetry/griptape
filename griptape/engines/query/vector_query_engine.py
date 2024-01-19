@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import Optional, TYPE_CHECKING
+from typing import TYPE_CHECKING, Optional
 from attr import define, field, Factory
 from griptape.artifacts import TextArtifact, BaseArtifact, ListArtifact
 from griptape.utils import PromptStack
@@ -7,6 +7,7 @@ from griptape.drivers import OpenAiChatPromptDriver
 from griptape.engines import BaseQueryEngine
 from griptape.utils.j2 import J2
 from griptape.tokenizers import OpenAiTokenizer
+from griptape.rules import Ruleset
 
 if TYPE_CHECKING:
     from griptape.drivers import BaseVectorStoreDriver, BasePromptDriver
@@ -25,10 +26,10 @@ class VectorQueryEngine(BaseQueryEngine):
     def query(
         self,
         query: str,
+        namespace: Optional[str] = None,
+        rulesets: Optional[list[Ruleset]] = None,
         metadata: Optional[str] = None,
         top_n: Optional[int] = None,
-        namespace: Optional[str] = None,
-        rulesets: Optional[str] = None,
         preamble: Optional[str] = "You can answer questions by searching through text segments. Always be truthful. Don't make up facts. Use the below list of text segments to respond to the subsequent query. If the answer cannot be found in the segments, say 'I could not find an answer'.",
         prompt_stack: Optional[PromptStack] = None,
     ) -> TextArtifact:
@@ -37,7 +38,9 @@ class VectorQueryEngine(BaseQueryEngine):
         print(">>>>> Query Results")
         print(result)
         artifacts = [
-            a for a in [BaseArtifact.from_json(r.meta["artifact"]) for r in result] if isinstance(a, TextArtifact)
+            artifact
+            for artifact in [BaseArtifact.from_json(r.meta["artifact"]) for r in result if r.meta]
+            if isinstance(artifact, TextArtifact)
         ]
         text_segments = []
         message = ""
@@ -85,6 +88,6 @@ class VectorQueryEngine(BaseQueryEngine):
 
     def load_artifacts(self, namespace: str) -> ListArtifact:
         result = self.vector_store_driver.load_entries(namespace)
-        artifacts = [BaseArtifact.from_json(r.meta["artifact"]) for r in result if r.meta.get("artifact")]
+        artifacts = [BaseArtifact.from_json(r.meta["artifact"]) for r in result if r.meta and r.meta.get("artifact")]
 
         return ListArtifact([a for a in artifacts if isinstance(a, TextArtifact)])

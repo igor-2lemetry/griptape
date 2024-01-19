@@ -1,6 +1,6 @@
 from __future__ import annotations
 from abc import ABC, abstractmethod
-from typing import TYPE_CHECKING, Optional, Callable, Tuple, Type
+from typing import TYPE_CHECKING, Optional, Callable, Tuple, Type, Iterator
 from attr import define, field, Factory
 from griptape.events import StartPromptEvent, FinishPromptEvent, CompletionChunkEvent
 from griptape.utils import PromptStack
@@ -33,7 +33,7 @@ class BasePromptDriver(ExponentialBackoffMixin, ABC):
     prompt_stack_to_string: Callable[[PromptStack], str] = field(
         default=Factory(lambda self: self.default_prompt_stack_to_string_converter, takes_self=True), kw_only=True
     )
-    ignored_exception_types: Tuple[Type[Exception], ...] = field(default=Factory(lambda: (ImportError)), kw_only=True)
+    ignored_exception_types: tuple[type[Exception], ...] = field(default=Factory(lambda: (ImportError)), kw_only=True)
     model: str
     tokenizer: BaseTokenizer
     stream: bool = field(default=False, kw_only=True)
@@ -51,11 +51,19 @@ class BasePromptDriver(ExponentialBackoffMixin, ABC):
 
     def before_run(self, prompt_stack: PromptStack) -> None:
         if self.structure:
-            self.structure.publish_event(StartPromptEvent(token_count=self.token_count(prompt_stack)))
+            self.structure.publish_event(
+                StartPromptEvent(
+                    token_count=self.token_count(prompt_stack),
+                    prompt_stack=prompt_stack,
+                    prompt=self.prompt_stack_to_string(prompt_stack),
+                )
+            )
 
     def after_run(self, result: TextArtifact) -> None:
         if self.structure:
-            self.structure.publish_event(FinishPromptEvent(token_count=result.token_count(self.tokenizer)))
+            self.structure.publish_event(
+                FinishPromptEvent(token_count=result.token_count(self.tokenizer), result=result.value)
+            )
 
     def run(self, prompt_stack: PromptStack) -> TextArtifact:
         for attempt in self.retrying():

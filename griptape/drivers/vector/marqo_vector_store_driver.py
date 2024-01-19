@@ -187,7 +187,7 @@ class MarqoVectorStoreDriver(BaseVectorStoreDriver):
             for r in results["hits"]
         ]
 
-    def create_index(self, name: str, **kwargs) -> Dict[str, Any]:
+    def create_index(self, name: str, **kwargs) -> dict[str, Any]:
         """Create a new index in the Marqo client.
 
         Args:
@@ -196,7 +196,7 @@ class MarqoVectorStoreDriver(BaseVectorStoreDriver):
 
         return self.mq.create_index(name, settings_dict=kwargs)
 
-    def delete_index(self, name: str) -> Dict[str, Any]:
+    def delete_index(self, name: str) -> dict[str, Any]:
         """Delete an index in the Marqo client.
 
         Args:
@@ -205,7 +205,7 @@ class MarqoVectorStoreDriver(BaseVectorStoreDriver):
 
         return self.mq.delete_index(name)
 
-    def get_indexes(self) -> List[str]:
+    def get_indexes(self) -> list[str]:
         """Get a list of all indexes in the Marqo client.
 
         Returns:
@@ -238,4 +238,7 @@ class MarqoVectorStoreDriver(BaseVectorStoreDriver):
             The ID of the vector that was added.
         """
 
-        raise Exception("not implemented")
+        raise NotImplementedError(f"{self.__class__.__name__} does not support upserting a vector.")
+
+    def delete_vector(self, vector_id: str):
+        raise NotImplementedError(f"{self.__class__.__name__} does not support deletion.")

@@ -1,3 +1,4 @@
+from __future__ import annotations
 from typing import Optional
 import json
 from attr import define, field
@@ -50,7 +51,21 @@ class BedrockClaudePromptModelDriver(BasePromptModelDriver):
             prompt_lines.append("Assistant: Here is the most relevant sentence in the context:")
         else:
             prompt_lines.append("Assistant: Here is the answer based on your search results:")
+#                 prompt_lines.append(f"\n\nAssistant: {i.content}")
+#             elif i.is_user():
+#                 prompt_lines.append(f"\n\nHuman: {i.content}")
+#             elif i.is_system():
+#                 if self.prompt_driver.model == "anthropic.claude-v2:1":
+#                     prompt_lines.append(f"{i.content}")
+#                 else:
+#                     prompt_lines.append(f"\n\nHuman: {i.content}")
+#                     prompt_lines.append("\n\nAssistant:")
+#             else:
+#                 prompt_lines.append(f"\n\nHuman: {i.content}")
+#
+#         prompt_lines.append("\n\nAssistant:")
 
+#         return {"prompt": "".join(prompt_lines)}
         return {"prompt": "\n\n" + "\n\n".join(prompt_lines)}
 
     def prompt_stack_to_model_params(self, prompt_stack: PromptStack) -> dict:
@@ -64,7 +79,10 @@ class BedrockClaudePromptModelDriver(BasePromptModelDriver):
             "top_k": self.top_k,
         }
 
-    def process_output(self, response_body: bytes) -> TextArtifact:
-        body = json.loads(response_body.decode())
+    def process_output(self, output: list[dict] | str | bytes) -> TextArtifact:
+        if isinstance(output, bytes):
+            body = json.loads(output.decode())
+        else:
+            raise Exception("Output must be bytes.")
 
         return TextArtifact(body["completion"])
