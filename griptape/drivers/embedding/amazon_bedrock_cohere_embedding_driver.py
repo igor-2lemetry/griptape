@@ -37,4 +37,7 @@ class AmazonBedrockCohereEmbeddingDriver(BaseEmbeddingDriver):
         )
         response_body = json.loads(response.get("body").read())
 
+        print(">>>>> RESPONSE")
+        print(response_body)
+
         return response_body.get("embeddings")[0]
