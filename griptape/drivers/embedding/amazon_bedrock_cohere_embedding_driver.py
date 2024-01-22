@@ -28,7 +28,7 @@ class AmazonBedrockCohereEmbeddingDriver(BaseEmbeddingDriver):
 
     def try_embed_chunk(self, chunk: str) -> list[float]:
         payload = {
-            "input_type": "search_document",
+            "input_type": "search_query",
             "texts": [chunk]
         }
 
