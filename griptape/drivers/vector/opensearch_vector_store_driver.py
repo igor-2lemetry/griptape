@@ -141,10 +141,8 @@ class OpenSearchVectorStoreDriver(BaseVectorStoreDriver):
         print(query)
         print(count)
         vector = self.embedding_driver.embed_string(query)
-        print(">>>>> Vector")
-        print(vector)
         # Base k-NN query
-#         query_body = {"size": count, "query": { "knn": { "vector": { "vector": vector, "k": count } } } }
+#         query_body = {"size": count, "query": {"knn": {field_name: {"vector": vector, "k": count}}}}
 
 #         query_body = {
 #           "query": {
