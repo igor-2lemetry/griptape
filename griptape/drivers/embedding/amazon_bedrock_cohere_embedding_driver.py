@@ -27,6 +27,8 @@ class AmazonBedrockCohereEmbeddingDriver(BaseEmbeddingDriver):
     )
 
     def try_embed_chunk(self, chunk: str) -> list[float]:
+        print(">>>>> HERE 3")
+
         payload = {
             "input_type": "search_document",
             "texts": [chunk]
@@ -36,5 +38,8 @@ class AmazonBedrockCohereEmbeddingDriver(BaseEmbeddingDriver):
             body=json.dumps(payload), modelId=self.model, accept="*/*", contentType="application/json"
         )
         response_body = json.loads(response.get("body").read())
+
+        print(">>>>> RESPONSE")
+        print(response_body)
 
         return response_body.get("embedding")
