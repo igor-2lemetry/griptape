@@ -136,7 +136,8 @@ class OpenSearchVectorStoreDriver(BaseVectorStoreDriver):
         Returns:
             A list of BaseVectorStoreDriver.QueryResult objects, each encapsulating the retrieved vector, its similarity score, metadata, and namespace.
         """
-        count = count if count else BaseVectorStoreDriver.DEFAULT_QUERY_COUNT
+#         count = count if count else BaseVectorStoreDriver.DEFAULT_QUERY_COUNT
+        count = 4
         print(">>>>> QUERY for SEARCH")
         print(query)
         print(count)
