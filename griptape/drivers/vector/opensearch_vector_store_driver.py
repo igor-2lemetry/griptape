@@ -169,6 +169,9 @@ class OpenSearchVectorStoreDriver(BaseVectorStoreDriver):
                 }
             }
 
+        print(">>>>> INDEX NAME")
+        print(self.index_name)
+
         response = self.client.search(index=self.index_name, body=query_body)
 
         return [
