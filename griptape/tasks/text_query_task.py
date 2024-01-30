@@ -14,7 +14,6 @@ class TextQueryTask(PromptTask):
     namespace: Optional[str] = field(default=None, kw_only=True)
     top_n: Optional[int] = field(default=None, kw_only=True)
     preamble: Optional[str] = field(default=None, kw_only=True)
-    assistant_appendix: Optional[str] = field(default=None, kw_only=True)
 
     @property
     def prompt_stack(self) -> PromptStack:
@@ -41,6 +40,5 @@ class TextQueryTask(PromptTask):
             rulesets=self.all_rulesets,
             top_n=self.top_n,
             preamble=self.preamble,
-            assistant_appendix=self.assistant_appendix,
             prompt_stack=self.prompt_stack
         )
