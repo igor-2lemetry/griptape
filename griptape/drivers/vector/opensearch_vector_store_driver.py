@@ -142,7 +142,6 @@ class OpenSearchVectorStoreDriver(BaseVectorStoreDriver):
         print(">>>>> QUERY for SEARCH")
         print(query)
         print(count)
-        print(">>>>> Hybrid Search")
         print(self.use_hybrid_search)
         vector = self.embedding_driver.embed_string(query)
         # Base k-NN query
@@ -166,8 +165,6 @@ class OpenSearchVectorStoreDriver(BaseVectorStoreDriver):
                     }
                 }
             }
-
-        print(query_body)
 
         if namespace:
             query_body["query"] = {

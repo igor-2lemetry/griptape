@@ -14,6 +14,7 @@ class BedrockClaudePromptModelDriver(BasePromptModelDriver):
     top_k: int = field(default=250, kw_only=True)
     _tokenizer: BedrockClaudeTokenizer = field(default=None, kw_only=True)
     prompt_driver: Optional[AmazonBedrockPromptDriver] = field(default=None, kw_only=True)
+    assistant_appendix: Optional[str] = field(default=None, kw_only=True)
 
     @property
     def tokenizer(self) -> BedrockClaudeTokenizer:
@@ -39,6 +40,9 @@ class BedrockClaudePromptModelDriver(BasePromptModelDriver):
 
     def prompt_stack_to_model_input(self, prompt_stack: PromptStack) -> dict:
         prompt_lines = []
+
+        print(">>>>> PROMPT STACK")
+        print(self.assistant_appendix)
 
         for i in prompt_stack.inputs:
             if i.is_assistant():
