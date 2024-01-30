@@ -167,6 +167,8 @@ class OpenSearchVectorStoreDriver(BaseVectorStoreDriver):
                 }
             }
 
+        print(query_body)
+
         if namespace:
             query_body["query"] = {
                 "bool": {
