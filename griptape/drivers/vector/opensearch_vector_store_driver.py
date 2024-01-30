@@ -30,6 +30,7 @@ class OpenSearchVectorStoreDriver(BaseVectorStoreDriver):
     use_ssl: bool = field(default=True, kw_only=True)
     verify_certs: bool = field(default=True, kw_only=True)
     index_name: str = field(kw_only=True)
+    use_hybrid_search: bool = field(default=False, kw_only=True)
 
     client: OpenSearch = field(
         default=Factory(
@@ -136,31 +137,35 @@ class OpenSearchVectorStoreDriver(BaseVectorStoreDriver):
         Returns:
             A list of BaseVectorStoreDriver.QueryResult objects, each encapsulating the retrieved vector, its similarity score, metadata, and namespace.
         """
+        text_field_name = "text"
         count = count if count else BaseVectorStoreDriver.DEFAULT_QUERY_COUNT
         print(">>>>> QUERY for SEARCH")
         print(query)
         print(count)
+        print(">>>>> Hybrid Search")
+        print(self.use_hybrid_search)
         vector = self.embedding_driver.embed_string(query)
         # Base k-NN query
-#         query_body = {"size": count, "query": {"knn": {field_name: {"vector": vector, "k": count}}}}
+        query_body = {"size": count, "query": {"knn": {field_name: {"vector": vector, "k": count}}}}
 
-        query_body = {
-          "size": count,
-          "query": {
-            "bool" : {
-              "should" : [
-                { "script_score": {
-                  "query": { "knn": { "vector": { "vector": vector, "k": count } } },
-                  "script": { "source": "knn_score", "lang": "knn", "params": { "field": "vector", "query_value": vector, "space_type": "cosinesimil" } }
-                } },
-                { "script_score": {
-                  "query": { "match": { "text": query } },
-                  "script": { "source": "knn_score", "lang": "knn", "params": { "field": "vector", "query_value": vector, "space_type": "cosinesimil" } }
-                } }
-              ]
+        if self.use_hybrid_search:
+            query_body = {
+                "size": count,
+                "query": {
+                    "bool" : {
+                        "should" : [
+                            { "script_score": {
+                                "query": { "knn": { field_name: { "vector": vector, "k": count } } },
+                                "script": { "source": "knn_score", "lang": "knn", "params": { "field": field_name, "query_value": vector, "space_type": "cosinesimil" } }
+                            } },
+                            { "script_score": {
+                                "query": { "match": { text_field_name: query } },
+                                "script": { "source": "knn_score", "lang": "knn", "params": { "field": field_name, "query_value": vector, "space_type": "cosinesimil" } }
+                            } }
+                        ]
+                    }
+                }
             }
-          }
-        }
 
         if namespace:
             query_body["query"] = {
@@ -168,9 +173,6 @@ class OpenSearchVectorStoreDriver(BaseVectorStoreDriver):
                     "must": [{"match": {"namespace": namespace}}, {"knn": {field_name: {"vector": vector, "k": count}}}]
                 }
             }
-
-        print(">>>>> INDEX NAME")
-        print(self.index_name)
 
         response = self.client.search(index=self.index_name, body=query_body)
 
