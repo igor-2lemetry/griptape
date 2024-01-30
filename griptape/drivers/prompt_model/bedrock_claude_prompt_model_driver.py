@@ -54,7 +54,7 @@ class BedrockClaudePromptModelDriver(BasePromptModelDriver):
             # https://www.anthropic.com/index/claude-2-1-prompting
             prompt_lines.append("Assistant: Here is the most relevant sentence in the context:")
         else:
-            prompt_lines.append("Assistant: Here is the answer based on your search results:")
+            prompt_lines.append("Assistant: {self.assistant_appendix}")
 #                 prompt_lines.append(f"\n\nAssistant: {i.content}")
 #             elif i.is_user():
 #                 prompt_lines.append(f"\n\nHuman: {i.content}")
