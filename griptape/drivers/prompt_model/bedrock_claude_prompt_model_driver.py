@@ -41,20 +41,13 @@ class BedrockClaudePromptModelDriver(BasePromptModelDriver):
     def prompt_stack_to_model_input(self, prompt_stack: PromptStack) -> dict:
         prompt_lines = []
 
-        print(">>>>> PROMPT STACK")
-        print(self.assistant_appendix)
-
         for i in prompt_stack.inputs:
             if i.is_assistant():
                 prompt_lines.append(f"Assistant: {i.content}")
             elif i.is_user():
                 prompt_lines.append(f"Human: {i.content}")
 
-        if self.prompt_driver.model == "anthropic.claude-v2:1":
-            # https://www.anthropic.com/index/claude-2-1-prompting
-            prompt_lines.append("Assistant: Here is the most relevant sentence in the context:")
-        else:
-            prompt_lines.append(f"Assistant: {self.assistant_appendix}")
+        prompt_lines.append(f"Assistant:{self.assistant_appendix}")
 #                 prompt_lines.append(f"\n\nAssistant: {i.content}")
 #             elif i.is_user():
 #                 prompt_lines.append(f"\n\nHuman: {i.content}")
