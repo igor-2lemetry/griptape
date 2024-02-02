@@ -72,11 +72,13 @@ class VectorQueryEngine(BaseQueryEngine):
 
                 break
 
-        if prompt_stack is None:
-            prompt_stack = PromptStack()
-        prompt_stack.add_user_input(message)
+        return self.prompt_driver.run(PromptStack(inputs=[PromptStack.Input(message, role=PromptStack.USER_ROLE)]))
 
-        return self.prompt_driver.run(prompt_stack=prompt_stack)
+#         if prompt_stack is None:
+#             prompt_stack = PromptStack()
+#         prompt_stack.add_user_input(message)
+#
+#         return self.prompt_driver.run(prompt_stack=prompt_stack)
 
     def upsert_text_artifact(self, artifact: TextArtifact, namespace: Optional[str] = None) -> str:
         result = self.vector_store_driver.upsert_text_artifact(artifact, namespace=namespace)
