@@ -41,19 +41,25 @@ class BedrockClaudePromptModelDriver(BasePromptModelDriver):
     def prompt_stack_to_model_input(self, prompt_stack: PromptStack) -> dict:
         prompt_lines = []
 
-        for i in prompt_stack.inputs:
+        system_to_combine_with_human = ""
+
+        for idx, i in enumerate(prompt_stack.inputs):
             if i.is_assistant():
                 prompt_lines.append(f"\n\nAssistant: {i.content}")
             elif i.is_user():
-                prompt_lines.append(f"\n\nHuman: {i.content}")
-#             elif i.is_system():
-#                 if self.prompt_driver.model == "anthropic.claude-v2:1":
-#                     prompt_lines.append(f"{i.content}")
-#                 else:
+                if (idx == len(prompt_stack.inputs) - 1 or idx == len(prompt_stack.inputs) - 2):
+                    prompt_lines.append(f"\n\nHuman: {i.content}{system_to_combine_with_human}")
+                else:
+                    prompt_lines.append(f"\n\nHuman: {i.content}")
+            elif i.is_system():
+                if self.prompt_driver.model == "anthropic.claude-v2:1":
+                    prompt_lines.append(f"{i.content}")
+                else:
+                    system_to_combine_with_human = f"\n\n{i.content}"
 #                     prompt_lines.append(f"\n\nHuman: {i.content}")
 #                     prompt_lines.append("\n\nAssistant:")
-#             else:
-#                 prompt_lines.append(f"\n\nHuman: {i.content}")
+            else:
+                prompt_lines.append(f"\n\nHuman: {i.content}")
 
         prompt_lines.append(f"\n\nAssistant:{self.assistant_appendix}")
 
