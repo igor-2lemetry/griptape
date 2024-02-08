@@ -28,7 +28,7 @@ class PromptTask(BaseTextInputTask):
 
 #         stack.add_user_input(self.input.to_text())
 
-        message = f"How would you ask the question considering the previous conversation: {self.input.to_text()}. Answer only with the new question. Do not change question if no previous messages provided. Do not change question if context looks different."
+        message = f"How would you ask the question considering the previous conversation: {self.input.to_text()}."
         print(">>>>> USER INPUT")
         print(message)
         stack.add_user_input(message)
