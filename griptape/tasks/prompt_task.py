@@ -13,7 +13,7 @@ if TYPE_CHECKING:
 @define
 class PromptTask(BaseTextInputTask):
     prompt_driver: Optional[BasePromptDriver] = field(default=None, kw_only=True)
-    preamble: Optional[str] = field(default=None, kw_only=True)
+    preamble: Optional[str] = field(default="", kw_only=True)
     generate_system_template: Callable[[PromptTask], str] = field(
         default=Factory(lambda self: self.default_system_template_generator, takes_self=True), kw_only=True
     )
