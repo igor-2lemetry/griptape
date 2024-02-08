@@ -13,8 +13,12 @@ if TYPE_CHECKING:
 @define
 class PromptTask(BaseTextInputTask):
     prompt_driver: Optional[BasePromptDriver] = field(default=None, kw_only=True)
+    preamble: Optional[str] = field(default=None, kw_only=True)
     generate_system_template: Callable[[PromptTask], str] = field(
         default=Factory(lambda self: self.default_system_template_generator, takes_self=True), kw_only=True
+    )
+    generate_user_template: Callable[[PromptTask], str] = field(
+        default=Factory(lambda self: self.default_user_template_generator, takes_self=True), kw_only=True
     )
 
     output: TextArtifact | ErrorArtifact | Optional[InfoArtifact] = field(default=None, init=False)
@@ -26,12 +30,7 @@ class PromptTask(BaseTextInputTask):
 
         stack.add_system_input(self.generate_system_template(self))
 
-#         stack.add_user_input(self.input.to_text())
-
-        message = f"How would you ask the question considering the previous conversation: {self.input.to_text()}."
-        print(">>>>> USER INPUT")
-        print(message)
-        stack.add_user_input(message)
+        stack.add_user_input(self.generate_user_template(self))
 
         if self.output:
             stack.add_assistant_input(self.output.to_text())
@@ -46,6 +45,9 @@ class PromptTask(BaseTextInputTask):
         return J2("tasks/prompt_task/system.j2").render(
             rulesets=J2("rulesets/rulesets.j2").render(rulesets=self.all_rulesets)
         )
+
+    def default_user_template_generator(self, _: PromptTask) -> str:
+        return J2("tasks/prompt_task/user.j2").render(preamble=self.preamble, query=self.input.to_text())
 
     def run(self) -> TextArtifact | InfoArtifact | ErrorArtifact:
         self.output = self.active_driver().run(self.prompt_stack)
