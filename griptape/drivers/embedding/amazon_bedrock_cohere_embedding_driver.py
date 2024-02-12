@@ -38,9 +38,14 @@ class AmazonBedrockCohereEmbeddingDriver(BaseEmbeddingDriver):
     def try_embed_chunk(self, chunk: str) -> list[float]:
         payload = {"input_type": self.input_type, "texts": [chunk]}
 
+        print(">>>>> Embedding Chunk")
+        print(payload)
+
         response = self.bedrock_client.invoke_model(
             body=json.dumps(payload), modelId=self.model, accept="*/*", contentType="application/json"
         )
         response_body = json.loads(response.get("body").read())
+
+        print(response_body)
 
         return response_body.get("embeddings")[0]
