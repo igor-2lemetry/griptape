@@ -1,6 +1,7 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING, Optional
 from attr import define, field
+from datetime import datetime
 
 from griptape.mixins import SerializableMixin
 
@@ -66,6 +67,7 @@ class PromptStack(SerializableMixin):
 
         if memory.autoprune and hasattr(memory, "structure"):
             should_prune = True
+            prompt_is_actual = True
             prompt_driver = memory.structure.prompt_driver
             temp_stack = PromptStack()
 
@@ -80,10 +82,13 @@ class PromptStack(SerializableMixin):
                 memory_inputs = memory.to_prompt_stack(num_runs_to_fit_in_prompt).inputs
                 temp_stack.inputs.extend(memory_inputs)
 
+                if memory.ttl and datetime.now() - memory.runs[num_runs_to_fit_in_prompt - 1].added_at > memory.ttl:
+                    prompt_is_actual = False
+
                 # Convert the prompt stack into tokens left.
                 prompt_string = prompt_driver.prompt_stack_to_string(temp_stack)
                 tokens_left = prompt_driver.tokenizer.count_tokens_left(prompt_string)
-                if tokens_left > 0:
+                if tokens_left > 0 and prompt_is_actual:
                     # There are still tokens left, no need to prune.
                     should_prune = False
                 else:

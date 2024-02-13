@@ -5,6 +5,7 @@ from griptape.memory.structure import Run
 from griptape.utils import PromptStack
 from griptape.mixins import SerializableMixin
 from abc import ABC, abstractmethod
+from datetime import timedelta
 
 if TYPE_CHECKING:
     from griptape.drivers import BaseConversationMemoryDriver
@@ -19,6 +20,7 @@ class BaseConversationMemory(SerializableMixin, ABC):
     autoload: bool = field(default=True, kw_only=True)
     autoprune: bool = field(default=True, kw_only=True)
     max_runs: Optional[int] = field(default=None, kw_only=True, metadata={"serializable": True})
+    ttl: Optional[timedelta] = field(default=None, kw_only=True)
 
     def __attrs_post_init__(self) -> None:
         if self.driver and self.autoload:
