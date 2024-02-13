@@ -1,5 +1,4 @@
 {{ preamble }}
-
 {% if metadata %}
 Metadata: """
 {{ metadata }}
@@ -8,15 +7,12 @@ Metadata: """
 <search_results>
 {% for segment in text_segments %}
 {{ segment }}
-
 {% endfor %}
 </search_results>
-
 Here is the user's query:
 <query>
 {{ query }}
 </query>
-
 {% if rulesets %}
 {{ rulesets }}
 {% endif %}
