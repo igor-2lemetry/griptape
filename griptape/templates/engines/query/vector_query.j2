@@ -11,11 +11,11 @@ Metadata: """
 {% endfor %}
 </search_results>
 
-{% if rulesets %}
-{{ rulesets }}
-{% endif %}
-
 Here is the user's query:
 <query>
 {{ query }}
 </query>
+
+{% if rulesets %}
+{{ rulesets }}
+{% endif %}
