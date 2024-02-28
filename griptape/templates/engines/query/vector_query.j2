@@ -12,11 +12,12 @@ Metadata: """
 {% endfor %}
 </search_results>
 
-Here is the user's query:
-<query>
-{{ query }}
-</query>
-
+<rules>
 {% if rulesets %}
 {{ rulesets }}
 {% endif %}
+</rules>
+
+Always follow the rules in the <rules> tags for answering the following question:
+
+{{ query }}

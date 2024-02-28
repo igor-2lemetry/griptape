@@ -1,7 +1,7 @@
 {% if rulesets and rulesets|length > 0 %}
 {% for ruleset in rulesets %}
 {% for rule in ruleset.rules %}
-{{ rule.value }}
+- {{ rule.value }}
 {% endfor %}
 {% endfor %}
 {% endif %}
