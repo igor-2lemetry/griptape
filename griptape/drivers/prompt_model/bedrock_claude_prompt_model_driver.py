@@ -55,7 +55,7 @@ class BedrockClaudePromptModelDriver(BasePromptModelDriver):
                 if self.prompt_driver.model == "anthropic.claude-v2:1":
                     prompt_lines.append(f"{i.content}")
                 else:
-                    system_to_combine_with_human = f"\n\nAlways follow the rules in the <rules> tags for answering the question.\n<rules>{i.content}\n</rules>"
+                    system_to_combine_with_human = f"\n\n<rules>\n{i.content}\n</rules>\n\nAlways follow the rules in the <rules> tags for answering the question."
 #                     prompt_lines.append(f"\n\nHuman: {i.content}")
 #                     prompt_lines.append("\n\nAssistant:")
             else:
