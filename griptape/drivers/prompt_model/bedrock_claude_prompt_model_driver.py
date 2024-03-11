@@ -83,7 +83,7 @@ class BedrockClaudePromptModelDriver(BasePromptModelDriver):
 #         prompt = self.prompt_stack_to_model_input(prompt_stack)["prompt"]
 
         return {
-            "max_tokens": 4096,
+            "max_tokens_to_sample": 4096,
             "stop_sequences": self.tokenizer.stop_sequences,
             "temperature": self.prompt_driver.temperature,
             "top_p": self.top_p,
