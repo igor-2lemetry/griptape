@@ -44,7 +44,7 @@ class BedrockClaudePromptModelDriver(BasePromptModelDriver):
         system_to_combine_with_human = ""
 
         system_prompt = ""
-        messages = ""
+        messages = []
 
         for idx, i in enumerate(prompt_stack.inputs):
             if i.is_assistant():
