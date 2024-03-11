@@ -1,5 +1,3 @@
-{{ preamble }}
-
 {% if metadata %}
 Metadata: """
 {{ metadata }}
@@ -12,12 +10,4 @@ Metadata: """
 {% endfor %}
 </search_results>
 
-<rules>
-{% if rulesets %}
-{{ rulesets }}
-{% endif %}
-</rules>
-
-Always follow the rules in the <rules> tags for answering the following question:
-
-{{ query }}
+Question: {{ query }}

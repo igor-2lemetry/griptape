@@ -22,6 +22,7 @@ class VectorQueryEngine(BaseQueryEngine):
         kw_only=True,
     )
     template_generator: J2 = field(default=Factory(lambda: J2("engines/query/vector_query.j2")), kw_only=True)
+    system_generator: J2 = field(default=Factory(lambda: J2("engines/query/vector_system.j2")), kw_only=True)
 
     def query(
         self,
@@ -43,16 +44,22 @@ class VectorQueryEngine(BaseQueryEngine):
         ]
         text_segments = []
         message = ""
+        system_message = ""
+
+        system_message = self.system_generator.render(
+            preamble=preamble,
+            rulesets=J2("rulesets/rulesets.j2").render(rulesets=rulesets),
+        )
 
         for artifact in artifacts:
             text_segments.append(artifact.value)
 
             message = self.template_generator.render(
-                preamble=preamble,
+#                 preamble=preamble,
                 metadata=metadata,
                 query=query,
                 text_segments=text_segments,
-                rulesets=J2("rulesets/rulesets.j2").render(rulesets=rulesets),
+#                 rulesets=J2("rulesets/rulesets.j2").render(rulesets=rulesets),
             )
             message_token_count = self.prompt_driver.token_count(
                 PromptStack(inputs=[PromptStack.Input(message, role=PromptStack.USER_ROLE)])
@@ -62,16 +69,16 @@ class VectorQueryEngine(BaseQueryEngine):
                 text_segments.pop()
 
                 message = self.template_generator.render(
-                    preamble=preamble,
+#                     preamble=preamble,
                     metadata=metadata,
                     query=query,
                     text_segments=text_segments,
-                    rulesets=J2("rulesets/rulesets.j2").render(rulesets=rulesets),
+#                     rulesets=J2("rulesets/rulesets.j2").render(rulesets=rulesets),
                 )
 
                 break
 
-        return self.prompt_driver.run(PromptStack(inputs=[PromptStack.Input(message, role=PromptStack.USER_ROLE)]))
+        return self.prompt_driver.run(PromptStack(inputs=[PromptStack.Input(system_message, role=PromptStack.SYSTEM_ROLE), PromptStack.Input(message, role=PromptStack.USER_ROLE)]))
 
     def upsert_text_artifact(self, artifact: TextArtifact, namespace: Optional[str] = None) -> str:
         result = self.vector_store_driver.upsert_text_artifact(artifact, namespace=namespace)
