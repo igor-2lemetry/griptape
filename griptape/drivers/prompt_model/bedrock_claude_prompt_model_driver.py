@@ -43,17 +43,28 @@ class BedrockClaudePromptModelDriver(BasePromptModelDriver):
 
         system_to_combine_with_human = ""
 
+        system_prompt = ""
+        messages = ""
+
         for idx, i in enumerate(prompt_stack.inputs):
             if i.is_assistant():
-                prompt_lines.append(f"\n\nAssistant: {i.content}")
-            elif i.is_user():
-                if (idx == len(prompt_stack.inputs) - 1 or idx == len(prompt_stack.inputs) - 2):
-                    prompt_lines.append(f"\n\nHuman: {i.content}{system_to_combine_with_human}")
+                if self.prompt_driver.model == "anthropic.claude-3-sonnet-v1:0":
+                    messages.append({"role": "assistant", "content": [{"type": "text", "text": i.content}]})
                 else:
-                    prompt_lines.append(f"\n\nHuman: {i.content}")
+                    prompt_lines.append(f"\n\nAssistant: {i.content}")
+            elif i.is_user():
+                if self.prompt_driver.model == "anthropic.claude-3-sonnet-v1:0":
+                    messages.append({"role": "user", "content": [{"type": "text", "text": i.content}]})
+                else:
+                    if (idx == len(prompt_stack.inputs) - 1 or idx == len(prompt_stack.inputs) - 2):
+                        prompt_lines.append(f"\n\nHuman: {i.content}{system_to_combine_with_human}")
+                    else:
+                        prompt_lines.append(f"\n\nHuman: {i.content}")
             elif i.is_system():
                 if self.prompt_driver.model == "anthropic.claude-v2:1":
                     prompt_lines.append(f"{i.content}")
+                elif self.prompt_driver.model == "anthropic.claude-3-sonnet-v1:0":
+                    system_prompt = i.content
                 else:
                     system_to_combine_with_human = f"\n\n<rules>\n{i.content}\n</rules>\n\nAlways follow the rules in the <rules> tags for answering the question."
 #                     prompt_lines.append(f"\n\nHuman: {i.content}")
@@ -63,10 +74,13 @@ class BedrockClaudePromptModelDriver(BasePromptModelDriver):
 
         prompt_lines.append(f"\n\nAssistant:{self.assistant_appendix}")
 
-        return {"prompt": "".join(prompt_lines)}
+        if self.prompt_driver.model == "anthropic.claude-3-sonnet-v1:0":
+            return {"system": system_prompt, "messages": messages}
+        else:
+            return {"prompt": "".join(prompt_lines)}
 
     def prompt_stack_to_model_params(self, prompt_stack: PromptStack) -> dict:
-        prompt = self.prompt_stack_to_model_input(prompt_stack)["prompt"]
+#         prompt = self.prompt_stack_to_model_input(prompt_stack)["prompt"]
 
         return {
             "max_tokens": 4096,
