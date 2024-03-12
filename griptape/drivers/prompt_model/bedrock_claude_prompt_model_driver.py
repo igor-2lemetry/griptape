@@ -97,4 +97,7 @@ class BedrockClaudePromptModelDriver(BasePromptModelDriver):
         else:
             raise Exception("Output must be bytes.")
 
-        return TextArtifact(body["completion"])
+        if self.prompt_driver.model == "anthropic.claude-3-sonnet-20240229-v1:0":
+            return TextArtifact(body["content"][0]["text"])
+        else:
+            return TextArtifact(body["completion"])
