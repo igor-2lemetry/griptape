@@ -49,12 +49,12 @@ class BedrockClaudePromptModelDriver(BasePromptModelDriver):
         for idx, i in enumerate(prompt_stack.inputs):
             if i.is_assistant():
                 if self.prompt_driver.model == "anthropic.claude-3-sonnet-20240229-v1:0":
-                    messages.append({"role": "assistant", "content": [{"type": "text", "text": i.content}]})
+                    messages.append({"role": "assistant", "content": i.content})
                 else:
                     prompt_lines.append(f"\n\nAssistant: {i.content}")
             elif i.is_user():
                 if self.prompt_driver.model == "anthropic.claude-3-sonnet-20240229-v1:0":
-                    messages.append({"role": "user", "content": [{"type": "text", "text": i.content}]})
+                    messages.append({"role": "user", "content": i.content})
                 else:
                     if (idx == len(prompt_stack.inputs) - 1 or idx == len(prompt_stack.inputs) - 2):
                         prompt_lines.append(f"\n\nHuman: {i.content}{system_to_combine_with_human}")
