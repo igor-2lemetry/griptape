@@ -72,7 +72,10 @@ class BedrockClaudePromptModelDriver(BasePromptModelDriver):
             else:
                 prompt_lines.append(f"\n\nHuman: {i.content}")
 
-        prompt_lines.append(f"\n\nAssistant:{self.assistant_appendix}")
+        if self.prompt_driver.model == "anthropic.claude-3-sonnet-20240229-v1:0" and self.assistant_appendix != None:
+            messages.append({"role": "assistant", "content": self.assistant_appendix})
+        else:
+            prompt_lines.append(f"\n\nAssistant:{self.assistant_appendix}")
 
         if self.prompt_driver.model == "anthropic.claude-3-sonnet-20240229-v1:0":
             return {"system": system_prompt, "messages": messages}
