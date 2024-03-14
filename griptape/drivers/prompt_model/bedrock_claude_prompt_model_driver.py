@@ -105,6 +105,10 @@ class BedrockClaudePromptModelDriver(BasePromptModelDriver):
         else:
             raise Exception("Output must be bytes.")
 
+        print(">>>>> Process Output")
+        print(self.prompt_driver.model)
+        print(body)
+
         if self.prompt_driver.model == "anthropic.claude-3-sonnet-20240229-v1:0" or self.prompt_driver.model == "anthropic.claude-3-haiku-20240307-v1:0":
             return TextArtifact(body["content"][0]["text"])
         else:
