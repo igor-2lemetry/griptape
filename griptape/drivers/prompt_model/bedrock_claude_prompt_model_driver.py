@@ -90,14 +90,23 @@ class BedrockClaudePromptModelDriver(BasePromptModelDriver):
     def prompt_stack_to_model_params(self, prompt_stack: PromptStack) -> dict:
 #         prompt = self.prompt_stack_to_model_input(prompt_stack)["prompt"]
 
-        return {
-            "max_tokens": 4096,
-            "stop_sequences": self.tokenizer.stop_sequences,
-            "temperature": self.prompt_driver.temperature,
-            "top_p": self.top_p,
-            "top_k": self.top_k,
-            "anthropic_version": "bedrock-2023-05-31"
-        }
+        if self.prompt_driver.model == "anthropic.claude-3-sonnet-20240229-v1:0" or self.prompt_driver.model == "anthropic.claude-3-haiku-20240307-v1:0":
+            return {
+                "max_tokens": 4096,
+                "stop_sequences": self.tokenizer.stop_sequences,
+                "temperature": self.prompt_driver.temperature,
+                "top_p": self.top_p,
+                "top_k": self.top_k,
+                "anthropic_version": "bedrock-2023-05-31"
+            }
+        else:
+            return {
+                "max_tokens_to_sample": 4096,
+                "stop_sequences": self.tokenizer.stop_sequences,
+                "temperature": self.prompt_driver.temperature,
+                "top_p": self.top_p,
+                "top_k": self.top_k
+            }
 
     def process_output(self, output: list[dict] | str | bytes) -> TextArtifact:
         if isinstance(output, bytes):
