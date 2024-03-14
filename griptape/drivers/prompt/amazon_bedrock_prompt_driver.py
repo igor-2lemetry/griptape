@@ -25,6 +25,7 @@ class AmazonBedrockPromptDriver(BaseMultiModelPromptDriver):
             payload.update(model_input)
 
         print(">>>>> PAYLOAD TO BEDROCK")
+        print(self.model)
         print(json.dumps(payload))
 
         response = self.bedrock_client.invoke_model(

@@ -77,9 +77,14 @@ class BedrockClaudePromptModelDriver(BasePromptModelDriver):
         else:
             prompt_lines.append(f"\n\nAssistant:{self.assistant_appendix}")
 
+        print(">>>>> HERE")
+        print(self.prompt_driver.model)
+
         if self.prompt_driver.model == "anthropic.claude-3-sonnet-20240229-v1:0" or self.prompt_driver.model == "anthropic.claude-3-haiku-20240307-v1:0":
+            print(">>>>> HERE 1")
             return {"system": system_prompt, "messages": messages}
         else:
+            print(">>>>> HERE 2")
             return {"prompt": "".join(prompt_lines)}
 
     def prompt_stack_to_model_params(self, prompt_stack: PromptStack) -> dict:
