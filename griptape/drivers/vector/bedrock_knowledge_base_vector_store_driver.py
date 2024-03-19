@@ -81,3 +81,22 @@ class BedrockKnowledgeBaseVectorStoreDriver(BaseVectorStoreDriver):
             )
             for res in response["retrievalResults"]
         ]
+
+    def upsert_vector(
+        self,
+        vector: list[float],
+        vector_id: Optional[str] = None,
+        namespace: Optional[str] = None,
+        meta: Optional[dict] = None,
+        **kwargs,
+    ) -> str:
+        raise NotImplementedError(f"{self.__class__.__name__} does not support upsert.")
+
+    def load_entry(self, vector_id: str, namespace: Optional[str] = None) -> Optional[BaseVectorStoreDriver.Entry]:
+        raise NotImplementedError(f"{self.__class__.__name__} does not support loading entry.")
+
+    def load_entries(self, namespace: Optional[str] = None) -> list[BaseVectorStoreDriver.Entry]:
+        raise NotImplementedError(f"{self.__class__.__name__} does not support loading entries.")
+
+    def delete_vector(self, vector_id: str):
+        raise NotImplementedError(f"{self.__class__.__name__} does not support deletion.")
