@@ -36,6 +36,7 @@ from .vector.mongodb_vector_store_driver import MongoDbAtlasVectorStoreDriver
 from .vector.redis_vector_store_driver import RedisVectorStoreDriver
 from .vector.opensearch_vector_store_driver import OpenSearchVectorStoreDriver
 from .vector.amazon_opensearch_vector_store_driver import AmazonOpenSearchVectorStoreDriver
+from .vector.bedrock_knowledge_base_vector_store_driver import BedrockKnowledgeBaseVectorStoreDriver
 from .vector.pgvector_vector_store_driver import PgVectorVectorStoreDriver
 
 from .sql.base_sql_driver import BaseSqlDriver
@@ -99,6 +100,7 @@ __all__ = [
     "RedisVectorStoreDriver",
     "OpenSearchVectorStoreDriver",
     "AmazonOpenSearchVectorStoreDriver",
+    "BedrockKnowledgeBaseVectorStoreDriver",
     "PgVectorVectorStoreDriver",
     "BaseSqlDriver",
     "AmazonRedshiftSqlDriver",
