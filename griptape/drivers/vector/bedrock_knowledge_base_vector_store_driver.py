@@ -39,7 +39,7 @@ class BedrockKnowledgeBaseVectorStoreDriver(BaseVectorStoreDriver):
 
         query_body = {'text': query}
         query_params = {
-            'vectorSearchConfiguration': {'numberOfResults': 5, 'overrideSearchType': search_type}
+            'vectorSearchConfiguration': {'numberOfResults': count, 'overrideSearchType': search_type}
         }
 
         print(">>>>> BedrockKnowledgeBase Query")
