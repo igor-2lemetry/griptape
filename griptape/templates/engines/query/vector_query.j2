@@ -3,11 +3,10 @@ Metadata: """
 {{ metadata }}
 """
 {% endif %}
-<search_results>
+Search Results:
 {% for segment in text_segments %}
 {{ segment }}
-
 {% endfor %}
-</search_results>
 
-Question: {{ query }}
+Question:
+{{ query }}
