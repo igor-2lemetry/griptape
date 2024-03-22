@@ -48,7 +48,7 @@ class VectorQueryEngine(BaseQueryEngine):
 
         system_message = self.system_generator.render(
             preamble=preamble,
-            rulesets=J2("rulesets/rulesets.j2").render(rulesets=rulesets),
+#             rulesets=J2("rulesets/rulesets.j2").render(rulesets=rulesets),
         )
 
         for artifact in artifacts:
@@ -59,7 +59,7 @@ class VectorQueryEngine(BaseQueryEngine):
                 metadata=metadata,
                 query=query,
                 text_segments=text_segments,
-#                 rulesets=J2("rulesets/rulesets.j2").render(rulesets=rulesets),
+                rulesets=J2("rulesets/rulesets.j2").render(rulesets=rulesets),
             )
             message_token_count = self.prompt_driver.token_count(
                 PromptStack(inputs=[PromptStack.Input(message, role=PromptStack.USER_ROLE)])
@@ -73,7 +73,7 @@ class VectorQueryEngine(BaseQueryEngine):
                     metadata=metadata,
                     query=query,
                     text_segments=text_segments,
-#                     rulesets=J2("rulesets/rulesets.j2").render(rulesets=rulesets),
+                    rulesets=J2("rulesets/rulesets.j2").render(rulesets=rulesets),
                 )
 
                 break
