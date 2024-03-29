@@ -77,8 +77,6 @@ class BedrockClaudePromptModelDriver(BasePromptModelDriver):
         else:
             prompt_lines.append(f"\n\nAssistant:{self.assistant_appendix}")
 
-        print(self.prompt_driver.model)
-
         if self.prompt_driver.model == "anthropic.claude-3-sonnet-20240229-v1:0" or self.prompt_driver.model == "anthropic.claude-3-haiku-20240307-v1:0":
             print(">>>>> Massages API")
             return {"system": system_prompt, "messages": messages}
@@ -112,10 +110,6 @@ class BedrockClaudePromptModelDriver(BasePromptModelDriver):
             body = json.loads(output.decode())
         else:
             raise Exception("Output must be bytes.")
-
-        print(">>>>> Process Output")
-        print(self.prompt_driver.model)
-        print(body)
 
         if self.prompt_driver.model == "anthropic.claude-3-sonnet-20240229-v1:0" or self.prompt_driver.model == "anthropic.claude-3-haiku-20240307-v1:0":
             return TextArtifact(body["content"][0]["text"])
