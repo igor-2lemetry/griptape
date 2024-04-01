@@ -37,10 +37,14 @@ class VectorQueryEngine(BaseQueryEngine):
         if self.vector_store_driver.generate_response == True:
             print(">>>>> Do generation")
 
+            retrieve_message = ""
+
             retrieve_message = self.retrieve_generator.render(
                 preamble=preamble,
                 rulesets=J2("rulesets/rulesets.j2").render(rulesets=rulesets),
             )
+
+            print(retrieve_message)
 
             return self.vector_store_driver.retrieve_and_generate(query, top_n, namespace, retrieve_message)
 
