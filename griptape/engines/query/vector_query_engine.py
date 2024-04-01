@@ -23,6 +23,7 @@ class VectorQueryEngine(BaseQueryEngine):
     )
     template_generator: J2 = field(default=Factory(lambda: J2("engines/query/vector_query.j2")), kw_only=True)
     system_generator: J2 = field(default=Factory(lambda: J2("engines/query/vector_system.j2")), kw_only=True)
+    retrieve_generator: J2 = field(default=Factory(lambda: J2("engines/query/vector_generate.j2")), kw_only=True)
 
     def query(
         self,
@@ -33,6 +34,17 @@ class VectorQueryEngine(BaseQueryEngine):
         top_n: Optional[int] = None,
         preamble: Optional[str] = "You can answer questions by searching through text segments. Always be truthful. Don't make up facts. Use the below list of text segments to respond to the subsequent query. If the answer cannot be found in the segments, say 'I could not find an answer'.",
     ) -> TextArtifact:
+        if self.vector_store_driver.generate_response = True:
+            print(">>>>> Do generation")
+
+            retrieve_message = self.retrieve_generator.render(
+                preamble=preamble,
+                rulesets=J2("rulesets/rulesets.j2").render(rulesets=rulesets),
+            )
+
+            return self.vector_store_driver.retrieve_and_generate(query, top_n, namespace, retrieve_message)
+
+        print(">>>>> Do retrieve only")
         tokenizer = self.prompt_driver.tokenizer
         result = self.vector_store_driver.query(query, top_n, namespace)
         print(">>>>> Query Results")

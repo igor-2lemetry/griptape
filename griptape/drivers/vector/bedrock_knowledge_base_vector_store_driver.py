@@ -20,6 +20,7 @@ class BedrockKnowledgeBaseVectorStoreDriver(BaseVectorStoreDriver):
 
     knowledge_base_id: str = field(kw_only=True)
     use_hybrid_search: bool = field(default=False, kw_only=True)
+    generate_response: bool = field(default=False, kw_only=True)
 
     def query(
         self,
@@ -29,12 +30,12 @@ class BedrockKnowledgeBaseVectorStoreDriver(BaseVectorStoreDriver):
         include_vectors: bool = False,
         **kwargs,
     ) -> list[BaseVectorStoreDriver.QueryResult]:
+        print("Retrieve API")
         count = count if count else BaseVectorStoreDriver.DEFAULT_QUERY_COUNT
         search_type = 'HYBRID' if self.use_hybrid_search else 'SEMANTIC'
         print(">>>>> QUERY for SEARCH")
         print(query)
         print(count)
-        print(type(count))
         print(search_type)
 
         query_body = {'text': query}
@@ -82,6 +83,58 @@ class BedrockKnowledgeBaseVectorStoreDriver(BaseVectorStoreDriver):
             )
             for res in response["retrievalResults"]
         ]
+
+    def retrieve_and_generate(
+        self,
+        query: str,
+        count: Optional[int] = None,
+        namespace: Optional[str] = None,
+        include_vectors: bool = False,
+        prompt: Optional[str] = None,
+        **kwargs,
+    ) -> list[BaseVectorStoreDriver.QueryResult]:
+        print("Retrieve and Generate API")
+        count = count if count else BaseVectorStoreDriver.DEFAULT_QUERY_COUNT
+        search_type = 'HYBRID' if self.use_hybrid_search else 'SEMANTIC'
+        print(">>>>> QUERY for SEARCH")
+        print(query)
+        print(count)
+        print(search_type)
+        print(prompt)
+
+        query_body = {'text': query}
+        query_params = {
+            'type': 'KNOWLEDGE_BASE',
+            'knowledgeBaseConfiguration': {
+                'knowledgeBaseId': self.knowledge_base_id,
+                'modelArn': 'arn:aws:bedrock:us-east-1::foundation-model/anthropic.claude-3-haiku-20240307-v1:0',
+                'retrievalConfiguration': {
+                    'vectorSearchConfiguration': {
+                        'numberOfResults': count,
+                        'overrideSearchType': search_type
+                    }
+                },
+                'generationConfiguration': {
+                    'promptTemplate': {
+                        'textPromptTemplate': prompt
+                    }
+                }
+            }
+        }
+
+        print(">>>>> BedrockKnowledgeBase Query")
+        print(query_body)
+        print(query_params)
+
+        response = self.bedrock_agent_client.retrieve_and_generate(
+            input=query_body,
+            retrieveAndGenerateConfiguration=query_params
+        )
+
+        print(">>>>> BedrockKnowledgeBase Response")
+        print(response["output"]["text"])
+
+        return response["output"]["text"]
 
     def upsert_vector(
         self,
