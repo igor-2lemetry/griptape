@@ -90,7 +90,7 @@ class BedrockKnowledgeBaseVectorStoreDriver(BaseVectorStoreDriver):
         count: Optional[int] = None,
         namespace: Optional[str] = None,
         include_vectors: bool = False,
-        retrieve_message: Optional[str] = None,
+        prompt: Optional[str] = None,
         **kwargs,
     ) -> list[BaseVectorStoreDriver.QueryResult]:
         print("Retrieve and Generate API")
@@ -100,7 +100,7 @@ class BedrockKnowledgeBaseVectorStoreDriver(BaseVectorStoreDriver):
         print(query)
         print(count)
         print(search_type)
-        print(retrieve_message)
+        print(prompt)
 
         query_body = {'text': query}
         query_params = {
@@ -116,7 +116,7 @@ class BedrockKnowledgeBaseVectorStoreDriver(BaseVectorStoreDriver):
                 },
                 'generationConfiguration': {
                     'promptTemplate': {
-                        'textPromptTemplate': retrieve_message
+                        'textPromptTemplate': prompt
                     }
                 }
             }

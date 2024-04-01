@@ -46,7 +46,7 @@ class VectorQueryEngine(BaseQueryEngine):
 
             print(retrieve_message)
 
-            return self.vector_store_driver.retrieve_and_generate(query, top_n, namespace, retrieve_message)
+            return self.vector_store_driver.retrieve_and_generate(query, top_n, namespace, prompt=retrieve_message)
 
         print(">>>>> Do retrieve only")
         tokenizer = self.prompt_driver.tokenizer
