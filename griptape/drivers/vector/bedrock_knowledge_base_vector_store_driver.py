@@ -21,6 +21,7 @@ class BedrockKnowledgeBaseVectorStoreDriver(BaseVectorStoreDriver):
     knowledge_base_id: str = field(kw_only=True)
     use_hybrid_search: bool = field(default=False, kw_only=True)
     generate_response: bool = field(default=False, kw_only=True)
+    sessionId: str = field(kw_only=True)
 
     def query(
         self,
@@ -105,6 +106,7 @@ class BedrockKnowledgeBaseVectorStoreDriver(BaseVectorStoreDriver):
         query_body = {'text': query}
         query_params = {
             'type': 'KNOWLEDGE_BASE',
+            'sessionId': self.sessionId,
             'knowledgeBaseConfiguration': {
                 'knowledgeBaseId': self.knowledge_base_id,
                 'modelArn': 'arn:aws:bedrock:us-east-1::foundation-model/anthropic.claude-3-sonnet-20240229-v1:0',
