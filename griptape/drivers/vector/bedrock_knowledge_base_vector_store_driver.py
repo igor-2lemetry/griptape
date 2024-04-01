@@ -92,7 +92,7 @@ class BedrockKnowledgeBaseVectorStoreDriver(BaseVectorStoreDriver):
         include_vectors: bool = False,
         prompt: Optional[str] = None,
         **kwargs,
-    ) -> list[BaseVectorStoreDriver.QueryResult]:
+    ) -> TextArtifact:
         print("Retrieve and Generate API")
         count = count if count else BaseVectorStoreDriver.DEFAULT_QUERY_COUNT
         search_type = 'HYBRID' if self.use_hybrid_search else 'SEMANTIC'
@@ -134,7 +134,7 @@ class BedrockKnowledgeBaseVectorStoreDriver(BaseVectorStoreDriver):
         print(">>>>> BedrockKnowledgeBase Response")
         print(response["output"]["text"])
 
-        return response["output"]["text"]
+        return TextArtifact(response["output"]["text"])
 
     def upsert_vector(
         self,
