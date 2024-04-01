@@ -34,7 +34,7 @@ class VectorQueryEngine(BaseQueryEngine):
         top_n: Optional[int] = None,
         preamble: Optional[str] = "You can answer questions by searching through text segments. Always be truthful. Don't make up facts. Use the below list of text segments to respond to the subsequent query. If the answer cannot be found in the segments, say 'I could not find an answer'.",
     ) -> TextArtifact:
-        if self.vector_store_driver.generate_response = True:
+        if self.vector_store_driver.generate_response == True:
             print(">>>>> Do generation")
 
             retrieve_message = self.retrieve_generator.render(
