@@ -129,7 +129,7 @@ class BedrockKnowledgeBaseVectorStoreDriver(BaseVectorStoreDriver):
 
         response = self.bedrock_agent_client.retrieve_and_generate(
             input=query_body,
-            sessionId=self.sessionId,
+#             sessionId=self.sessionId,
             retrieveAndGenerateConfiguration=query_params
         )
 
