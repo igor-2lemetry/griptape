@@ -25,6 +25,8 @@ class VectorQueryEngine(BaseQueryEngine):
     system_generator: J2 = field(default=Factory(lambda: J2("engines/query/vector_system.j2")), kw_only=True)
     retrieve_generator: J2 = field(default=Factory(lambda: J2("engines/query/vector_generate.j2")), kw_only=True)
 
+    DEFAULT_QUERY_PREAMBLE = "You can answer questions by searching through text segments. Always be truthful. Don't make up facts. Use the below list of text segments to respond to the subsequent query. If the answer cannot be found in the segments, say 'I could not find an answer'."
+
     def query(
         self,
         query: str,
@@ -32,8 +34,10 @@ class VectorQueryEngine(BaseQueryEngine):
         rulesets: Optional[list[Ruleset]] = None,
         metadata: Optional[str] = None,
         top_n: Optional[int] = None,
-        preamble: Optional[str] = "You can answer questions by searching through text segments. Always be truthful. Don't make up facts. Use the below list of text segments to respond to the subsequent query. If the answer cannot be found in the segments, say 'I could not find an answer'.",
+        preamble: Optional[str] = None,
     ) -> TextArtifact:
+        preamble = preamble if preamble else self.DEFAULT_QUERY_PREAMBLE
+
         if self.vector_store_driver.generate_response == True:
             print(">>>>> Do generation")
 
