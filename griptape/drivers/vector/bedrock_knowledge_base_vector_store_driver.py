@@ -21,7 +21,7 @@ class BedrockKnowledgeBaseVectorStoreDriver(BaseVectorStoreDriver):
     knowledge_base_id: str = field(kw_only=True)
     use_hybrid_search: bool = field(default=False, kw_only=True)
     generate_response: bool = field(default=False, kw_only=True)
-    sessionId: str = field(kw_only=True)
+#     sessionId: str = field(kw_only=True)
 
     def query(
         self,
@@ -92,6 +92,7 @@ class BedrockKnowledgeBaseVectorStoreDriver(BaseVectorStoreDriver):
         namespace: Optional[str] = None,
         include_vectors: bool = False,
         prompt: Optional[str] = None,
+        session_id: Optional[str] = None,
         **kwargs,
     ) -> TextArtifact:
         print("Retrieve and Generate API")
@@ -126,10 +127,11 @@ class BedrockKnowledgeBaseVectorStoreDriver(BaseVectorStoreDriver):
         print(">>>>> BedrockKnowledgeBase Query")
         print(query_body)
         print(query_params)
+        print(session_id)
 
         response = self.bedrock_agent_client.retrieve_and_generate(
             input=query_body,
-#             sessionId=self.sessionId,
+            sessionId=session_id if session_id else None,
             retrieveAndGenerateConfiguration=query_params
         )
 

@@ -53,13 +53,17 @@ class VectorQueryEngine(BaseQueryEngine):
             print(">>>>> Defining Structure")
             print(self.prompt_driver.structure.conversation_memory.runs)
 
+            session_id = ""
+
             if len(self.prompt_driver.structure.conversation_memory.runs) > 0:
                 print(">>>>> Last structure output")
                 print(self.prompt_driver.structure.conversation_memory.runs[-1].output)
+                session_id = self.prompt_driver.structure.conversation_memory.runs[-1].output.split('<SID>')[-1]
+                print(session_id)
             else:
                 print(">>>>> No last output")
 
-            return self.vector_store_driver.retrieve_and_generate(query, top_n, namespace, prompt=retrieve_message)
+            return self.vector_store_driver.retrieve_and_generate(query, top_n, namespace, prompt=retrieve_message, session_id=session_id)
 
         print(">>>>> Do retrieve only")
         tokenizer = self.prompt_driver.tokenizer
