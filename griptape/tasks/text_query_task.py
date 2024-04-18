@@ -15,6 +15,9 @@ class TextQueryTask(BaseTextInputTask):
     preamble: Optional[str] = field(default=None, kw_only=True)
 
     def run(self) -> TextArtifact:
+        print(">>>>> Passing structure memory")
+        self.query_engine.prompt_driver.structure = self.structure
+
         return self.query_engine.query(
             self.input.to_text(),
             namespace=self.namespace,
