@@ -126,6 +126,10 @@ class BedrockKnowledgeBaseVectorStoreDriver(BaseVectorStoreDriver):
         print(">>>>> BedrockKnowledgeBase Query")
         print(query_body)
         print(query_params)
+        print(">>>>> Defining Structure")
+        print(self.prompt_driver)
+        print(self.prompt_driver.structure)
+        print(self.prompt_driver.structure.conversation_memory)
 
         response = self.bedrock_agent_client.retrieve_and_generate(
             input=query_body,
@@ -136,7 +140,7 @@ class BedrockKnowledgeBaseVectorStoreDriver(BaseVectorStoreDriver):
         print(">>>>> BedrockKnowledgeBase Response")
         print(response)
 
-        return TextArtifact(response["output"]["text"])
+        return TextArtifact(response["output"]["text"] + '<SID>' + response["sessionId"])
 
     def upsert_vector(
         self,
