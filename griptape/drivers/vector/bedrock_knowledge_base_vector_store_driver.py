@@ -129,11 +129,22 @@ class BedrockKnowledgeBaseVectorStoreDriver(BaseVectorStoreDriver):
         print(query_params)
         print(session_id)
 
-        response = self.bedrock_agent_client.retrieve_and_generate(
-            input=query_body,
-            sessionId=session_id if session_id else "",
-            retrieveAndGenerateConfiguration=query_params
-        )
+        rag_payload = {
+            input: query_body,
+            retrieveAndGenerateConfiguration: query_params
+        }
+
+        if session_id:
+            rag_payload.session_id = session_id
+
+        print(">>>>> RAG Payload")
+        print(rag_payload)
+
+        response = self.bedrock_agent_client.retrieve_and_generate(rag_payload)
+#             input=query_body,
+#             sessionId=session_id if session_id else "",
+#             retrieveAndGenerateConfiguration=query_params
+#         )
 
         print(">>>>> BedrockKnowledgeBase Response")
         print(response)
