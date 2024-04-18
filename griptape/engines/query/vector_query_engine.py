@@ -51,9 +51,13 @@ class VectorQueryEngine(BaseQueryEngine):
             print(retrieve_message)
 
             print(">>>>> Defining Structure")
-            print(self.prompt_driver)
-            print(self.prompt_driver.structure)
-            print(self.prompt_driver.structure.conversation_memory)
+            print(self.prompt_driver.structure.conversation_memory.runs)
+
+            if len(self.prompt_driver.structure.conversation_memory.runs) > 0:
+                print(">>>>> Last structure output")
+                print(self.prompt_driver.structure.conversation_memory.runs[-1].output)
+            else:
+                print(">>>>> No last output")
 
             return self.vector_store_driver.retrieve_and_generate(query, top_n, namespace, prompt=retrieve_message)
 
