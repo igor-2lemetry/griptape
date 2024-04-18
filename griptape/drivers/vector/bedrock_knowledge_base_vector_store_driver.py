@@ -108,7 +108,7 @@ class BedrockKnowledgeBaseVectorStoreDriver(BaseVectorStoreDriver):
             'type': 'KNOWLEDGE_BASE',
             'knowledgeBaseConfiguration': {
                 'knowledgeBaseId': self.knowledge_base_id,
-                'modelArn': 'arn:aws:bedrock:us-east-1::foundation-model/anthropic.claude-3-sonnet-20240307-v1:0',
+                'modelArn': 'arn:aws:bedrock:us-east-1::foundation-model/anthropic.claude-3-sonnet-20240229-v1:0',
                 'retrievalConfiguration': {
                     'vectorSearchConfiguration': {
                         'numberOfResults': count,
