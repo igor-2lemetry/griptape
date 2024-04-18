@@ -50,6 +50,11 @@ class VectorQueryEngine(BaseQueryEngine):
 
             print(retrieve_message)
 
+            print(">>>>> Defining Structure")
+            print(self.prompt_driver)
+            print(self.prompt_driver.structure)
+            print(self.prompt_driver.structure.conversation_memory)
+
             return self.vector_store_driver.retrieve_and_generate(query, top_n, namespace, prompt=retrieve_message)
 
         print(">>>>> Do retrieve only")
