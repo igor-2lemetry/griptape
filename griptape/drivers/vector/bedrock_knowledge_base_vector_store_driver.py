@@ -130,8 +130,8 @@ class BedrockKnowledgeBaseVectorStoreDriver(BaseVectorStoreDriver):
         print(session_id)
 
         rag_payload = {
-            input: query_body,
-            retrieveAndGenerateConfiguration: query_params
+            'input': query_body,
+            'retrieveAndGenerateConfiguration': query_params
         }
 
         if session_id:
