@@ -54,6 +54,8 @@ class VectorQueryEngine(BaseQueryEngine):
             print(self.prompt_driver.structure.conversation_memory.runs)
             print(">>>>> Used model")
             print(self.prompt_driver.model)
+            print(">>>>> Check Assistant Appendix")
+            print(self.prompt_driver.prompt_model_driver.assistant_appendix)
 
             session_id = ""
 
