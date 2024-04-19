@@ -52,6 +52,8 @@ class VectorQueryEngine(BaseQueryEngine):
 
             print(">>>>> Defining Structure")
             print(self.prompt_driver.structure.conversation_memory.runs)
+            print(">>>>> Used model")
+            print(self.prompt_driver.model)
 
             session_id = ""
 
