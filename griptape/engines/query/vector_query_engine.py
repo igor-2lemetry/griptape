@@ -65,7 +65,7 @@ class VectorQueryEngine(BaseQueryEngine):
             else:
                 print(">>>>> No last output")
 
-            return self.vector_store_driver.retrieve_and_generate(query, top_n, namespace, prompt=retrieve_message, session_id=session_id)
+            return self.vector_store_driver.retrieve_and_generate(query, top_n, namespace, prompt=retrieve_message, model=self.prompt_driver.model, session_id=session_id)
 
         print(">>>>> Do retrieve only")
         tokenizer = self.prompt_driver.tokenizer

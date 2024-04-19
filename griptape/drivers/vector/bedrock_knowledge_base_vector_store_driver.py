@@ -92,6 +92,7 @@ class BedrockKnowledgeBaseVectorStoreDriver(BaseVectorStoreDriver):
         namespace: Optional[str] = None,
         include_vectors: bool = False,
         prompt: Optional[str] = None,
+        model: Optional[str] = None,
         session_id: Optional[str] = None,
         **kwargs,
     ) -> TextArtifact:
@@ -103,13 +104,14 @@ class BedrockKnowledgeBaseVectorStoreDriver(BaseVectorStoreDriver):
         print(count)
         print(search_type)
         print(prompt)
+        print(model)
 
         query_body = {'text': query}
         query_params = {
             'type': 'KNOWLEDGE_BASE',
             'knowledgeBaseConfiguration': {
                 'knowledgeBaseId': self.knowledge_base_id,
-                'modelArn': 'arn:aws:bedrock:us-east-1::foundation-model/anthropic.claude-3-sonnet-20240229-v1:0',
+                'modelArn': f'arn:aws:bedrock:us-east-1::foundation-model/{model}',
                 'retrievalConfiguration': {
                     'vectorSearchConfiguration': {
                         'numberOfResults': count,
