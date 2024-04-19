@@ -106,6 +106,9 @@ class BedrockKnowledgeBaseVectorStoreDriver(BaseVectorStoreDriver):
         print(prompt)
         print(model)
 
+        print(">>>>> Region")
+        print(import_optional_dependency("boto3").Session().region_name)
+
         query_body = {'text': query}
         query_params = {
             'type': 'KNOWLEDGE_BASE',
