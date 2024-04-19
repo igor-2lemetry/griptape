@@ -99,22 +99,21 @@ class BedrockKnowledgeBaseVectorStoreDriver(BaseVectorStoreDriver):
         print("Retrieve and Generate API")
         count = count if count else BaseVectorStoreDriver.DEFAULT_QUERY_COUNT
         search_type = 'HYBRID' if self.use_hybrid_search else 'SEMANTIC'
+        region = import_optional_dependency("boto3").Session().region_name
         print(">>>>> QUERY for SEARCH")
         print(query)
         print(count)
         print(search_type)
         print(prompt)
+        print(region)
         print(model)
-
-        print(">>>>> Region")
-        print(import_optional_dependency("boto3").Session().region_name)
 
         query_body = {'text': query}
         query_params = {
             'type': 'KNOWLEDGE_BASE',
             'knowledgeBaseConfiguration': {
                 'knowledgeBaseId': self.knowledge_base_id,
-                'modelArn': f'arn:aws:bedrock:us-east-1::foundation-model/{model}',
+                'modelArn': f'arn:aws:bedrock:{region}::foundation-model/{model}',
                 'retrievalConfiguration': {
                     'vectorSearchConfiguration': {
                         'numberOfResults': count,
