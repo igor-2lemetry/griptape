@@ -20,7 +20,7 @@ class BedrockKnowledgeBaseVectorStoreDriver(BaseVectorStoreDriver):
 
     knowledge_base_id: str = field(kw_only=True)
     use_hybrid_search: bool = field(default=False, kw_only=True)
-    generate_response: bool = field(default=False, kw_only=True)
+    use_rag_api: bool = field(default=False, kw_only=True)
 #     sessionId: str = field(kw_only=True)
 
     def query(
