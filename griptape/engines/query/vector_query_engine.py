@@ -46,6 +46,7 @@ class VectorQueryEngine(BaseQueryEngine):
             retrieve_message = self.retrieve_generator.render(
                 preamble=preamble,
                 rulesets=J2("rulesets/rulesets.j2").render(rulesets=rulesets),
+                appendix=self.prompt_driver.prompt_model_driver.assistant_appendix
             )
 
             print(retrieve_message)
