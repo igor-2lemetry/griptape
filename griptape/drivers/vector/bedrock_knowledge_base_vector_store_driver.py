@@ -21,7 +21,6 @@ class BedrockKnowledgeBaseVectorStoreDriver(BaseVectorStoreDriver):
     knowledge_base_id: str = field(kw_only=True)
     use_hybrid_search: bool = field(default=False, kw_only=True)
     use_rag_api: bool = field(default=False, kw_only=True)
-#     sessionId: str = field(kw_only=True)
 
     def query(
         self,
@@ -31,7 +30,6 @@ class BedrockKnowledgeBaseVectorStoreDriver(BaseVectorStoreDriver):
         include_vectors: bool = False,
         **kwargs,
     ) -> list[BaseVectorStoreDriver.QueryResult]:
-        print("Retrieve API")
         count = count if count else BaseVectorStoreDriver.DEFAULT_QUERY_COUNT
         search_type = 'HYBRID' if self.use_hybrid_search else 'SEMANTIC'
         print(">>>>> QUERY for SEARCH")
@@ -44,10 +42,6 @@ class BedrockKnowledgeBaseVectorStoreDriver(BaseVectorStoreDriver):
             'vectorSearchConfiguration': {'numberOfResults': count, 'overrideSearchType': search_type}
         }
 
-        print(">>>>> BedrockKnowledgeBase Query")
-        print(query_body)
-        print(query_params)
-
         response = self.bedrock_agent_client.retrieve(
             retrievalQuery=query_body,
             knowledgeBaseId=self.knowledge_base_id,
@@ -56,24 +50,6 @@ class BedrockKnowledgeBaseVectorStoreDriver(BaseVectorStoreDriver):
 
         print(">>>>> BedrockKnowledgeBase Response")
         print(response["retrievalResults"])
-
-#         {
-#            "nextToken": "string",
-#            "retrievalResults": [
-#               {
-#                  "content": {
-#                     "text": "string"
-#                  },
-#                  "location": {
-#                     "s3Location": {
-#                        "uri": "string"
-#                     },
-#                     "type": "string"
-#                  },
-#                  "score": number
-#               }
-#            ]
-#         }
 
         return [
             BaseVectorStoreDriver.QueryResult(
@@ -104,9 +80,6 @@ class BedrockKnowledgeBaseVectorStoreDriver(BaseVectorStoreDriver):
         print(query)
         print(count)
         print(search_type)
-        print(prompt)
-        print(region)
-        print(model)
 
         query_body = {'text': query}
         query_params = {
@@ -129,9 +102,8 @@ class BedrockKnowledgeBaseVectorStoreDriver(BaseVectorStoreDriver):
         }
 
         print(">>>>> BedrockKnowledgeBase Query")
-        print(query_body)
-        print(query_params)
         print(session_id)
+        print(query_params)
 
         if session_id:
             response = self.bedrock_agent_client.retrieve_and_generate(

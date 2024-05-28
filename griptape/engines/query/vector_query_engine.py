@@ -39,7 +39,7 @@ class VectorQueryEngine(BaseQueryEngine):
         preamble = preamble if preamble else self.DEFAULT_QUERY_PREAMBLE
 
         if self.vector_store_driver.use_rag_api == True:
-            print(">>>>> Do generation")
+            print(">>>>> RetrieveAndGenerateAPI")
 
             retrieve_message = ""
 
@@ -49,32 +49,18 @@ class VectorQueryEngine(BaseQueryEngine):
                 appendix=self.prompt_driver.prompt_model_driver.assistant_appendix
             )
 
-            print(retrieve_message)
-
-            print(">>>>> Defining Structure")
-            print(self.prompt_driver.structure.conversation_memory.runs)
-            print(">>>>> Used model")
-            print(self.prompt_driver.model)
-            print(">>>>> Check Assistant Appendix")
-            print(self.prompt_driver.prompt_model_driver.assistant_appendix)
-
             session_id = ""
 
             if len(self.prompt_driver.structure.conversation_memory.runs) > 0:
-                print(">>>>> Last structure output")
-                print(self.prompt_driver.structure.conversation_memory.runs[-1].output)
                 session_id = self.prompt_driver.structure.conversation_memory.runs[-1].output.split('<SID>')[-1]
-                print(session_id)
             else:
-                print(">>>>> No last output")
+                print(">>>>> No session stored")
 
             return self.vector_store_driver.retrieve_and_generate(query, top_n, namespace, prompt=retrieve_message, model=self.prompt_driver.model, session_id=session_id)
 
-        print(">>>>> Do retrieve only")
         tokenizer = self.prompt_driver.tokenizer
         result = self.vector_store_driver.query(query, top_n, namespace)
-        print(">>>>> Query Results")
-        print(result)
+
         artifacts = [
             artifact
             for artifact in [BaseArtifact.from_json(r.meta["artifact"]) for r in result if r.meta]

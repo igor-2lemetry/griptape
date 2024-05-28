@@ -179,6 +179,9 @@ class OpenSearchVectorStoreDriver(BaseVectorStoreDriver):
 
         response = self.client.search(index=self.index_name, body=query_body)
 
+        print(">>>>> OpenSearch Response")
+        print(response["hits"]["hits"])
+
         return [
             BaseVectorStoreDriver.QueryResult(
                 id=hit["_id"],
