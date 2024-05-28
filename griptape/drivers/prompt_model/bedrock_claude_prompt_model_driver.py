@@ -83,7 +83,7 @@ class BedrockClaudePromptModelDriver(BasePromptModelDriver):
 #         else:
 #             prompt_lines.append(f"\n\nAssistant:{self.assistant_appendix}")
 
-        if system is None:
+        if system_prompt is None:
             return {"messages": messages}
         else:
             return {"messages": messages, "system": system_prompt}
