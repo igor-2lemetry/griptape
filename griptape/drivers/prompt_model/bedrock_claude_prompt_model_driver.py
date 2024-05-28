@@ -43,65 +43,76 @@ class BedrockClaudePromptModelDriver(BasePromptModelDriver):
 
         system_to_combine_with_human = ""
 
-        system_prompt = ""
+        system_prompt = None
         messages = []
 
         for idx, i in enumerate(prompt_stack.inputs):
             if i.is_assistant():
-                if self.prompt_driver.model == "anthropic.claude-3-sonnet-20240229-v1:0" or self.prompt_driver.model == "anthropic.claude-3-haiku-20240307-v1:0":
-                    messages.append({"role": "assistant", "content": i.content})
-                else:
-                    prompt_lines.append(f"\n\nAssistant: {i.content}")
+#                 if self.prompt_driver.model == "anthropic.claude-3-sonnet-20240229-v1:0" or self.prompt_driver.model == "anthropic.claude-3-haiku-20240307-v1:0":
+                messages.append({"role": "assistant", "content": i.content})
+#                 else:
+#                     prompt_lines.append(f"\n\nAssistant: {i.content}")
             elif i.is_user():
-                if self.prompt_driver.model == "anthropic.claude-3-sonnet-20240229-v1:0" or self.prompt_driver.model == "anthropic.claude-3-haiku-20240307-v1:0":
+#                 if self.prompt_driver.model == "anthropic.claude-3-sonnet-20240229-v1:0" or self.prompt_driver.model == "anthropic.claude-3-haiku-20240307-v1:0":
+#                     messages.append({"role": "user", "content": i.content})
+#                 else:
+                if (idx == len(prompt_stack.inputs) - 1 or idx == len(prompt_stack.inputs) - 2):
+                    messages.append({"role": "user", "content": f"{system_to_combine_with_human}{i.content}"})
+#                     prompt_lines.append(f"\n\nHuman: {i.content}{system_to_combine_with_human}")
+                else:
                     messages.append({"role": "user", "content": i.content})
-                else:
-                    if (idx == len(prompt_stack.inputs) - 1 or idx == len(prompt_stack.inputs) - 2):
-                        prompt_lines.append(f"\n\nHuman: {i.content}{system_to_combine_with_human}")
-                    else:
-                        prompt_lines.append(f"\n\nHuman: {i.content}")
+#                     prompt_lines.append(f"\n\nHuman: {i.content}")
             elif i.is_system():
-                if self.prompt_driver.model == "anthropic.claude-v2:1":
-                    prompt_lines.append(f"{i.content}")
-                elif self.prompt_driver.model == "anthropic.claude-3-sonnet-20240229-v1:0" or self.prompt_driver.model == "anthropic.claude-3-haiku-20240307-v1:0":
-                    system_prompt = i.content
+                if self.prompt_driver.model == "anthropic.claude-v2" or self.prompt_driver.model == "anthropic.claude-instant-v1":
+                    system_to_combine_with_human = f"{i.content}\n"
                 else:
-                    system_to_combine_with_human = f"\n\nAlways follow the rules in the <rules> tags for answering the question.\n<rules>{i.content}\n</rules>"
+#                 if self.prompt_driver.model == "anthropic.claude-v2:1":
+#                     prompt_lines.append(f"{i.content}")
+#                 elif self.prompt_driver.model == "anthropic.claude-3-sonnet-20240229-v1:0" or self.prompt_driver.model == "anthropic.claude-3-haiku-20240307-v1:0":
+                    system_prompt = i.content
+#                 else:
+#                     system_to_combine_with_human = f"\n\nAlways follow the rules in the <rules> tags for answering the question.\n<rules>{i.content}\n</rules>"
 #                     prompt_lines.append(f"\n\nHuman: {i.content}")
 #                     prompt_lines.append("\n\nAssistant:")
-            else:
-                prompt_lines.append(f"\n\nHuman: {i.content}")
+#             else:
+#                 prompt_lines.append(f"\n\nHuman: {i.content}")
 
-        if (self.prompt_driver.model == "anthropic.claude-3-sonnet-20240229-v1:0" or self.prompt_driver.model == "anthropic.claude-3-haiku-20240307-v1:0") and self.assistant_appendix != None:
+#         if (self.prompt_driver.model == "anthropic.claude-3-sonnet-20240229-v1:0" or self.prompt_driver.model == "anthropic.claude-3-haiku-20240307-v1:0") and self.assistant_appendix != None:
+        if self.assistant_appendix != None:
             messages.append({"role": "assistant", "content": self.assistant_appendix})
-        else:
-            prompt_lines.append(f"\n\nAssistant:{self.assistant_appendix}")
+#         else:
+#             prompt_lines.append(f"\n\nAssistant:{self.assistant_appendix}")
 
-        if self.prompt_driver.model == "anthropic.claude-3-sonnet-20240229-v1:0" or self.prompt_driver.model == "anthropic.claude-3-haiku-20240307-v1:0":
-            return {"system": system_prompt, "messages": messages}
+        if system is None:
+            return {"messages": messages}
         else:
-            return {"prompt": "".join(prompt_lines)}
+            return {"messages": messages, "system": system_prompt}
+
+#         if self.prompt_driver.model == "anthropic.claude-3-sonnet-20240229-v1:0" or self.prompt_driver.model == "anthropic.claude-3-haiku-20240307-v1:0":
+#             return {"system": system_prompt, "messages": messages}
+#         else:
+#             return {"prompt": "".join(prompt_lines)}
 
     def prompt_stack_to_model_params(self, prompt_stack: PromptStack) -> dict:
 #         prompt = self.prompt_stack_to_model_input(prompt_stack)["prompt"]
 
-        if self.prompt_driver.model == "anthropic.claude-3-sonnet-20240229-v1:0" or self.prompt_driver.model == "anthropic.claude-3-haiku-20240307-v1:0":
-            return {
-                "max_tokens": 4096,
-                "stop_sequences": self.tokenizer.stop_sequences,
-                "temperature": self.prompt_driver.temperature,
-                "top_p": self.top_p,
-                "top_k": self.top_k,
-                "anthropic_version": "bedrock-2023-05-31"
-            }
-        else:
-            return {
-                "max_tokens_to_sample": 4096,
-                "stop_sequences": self.tokenizer.stop_sequences,
-                "temperature": self.prompt_driver.temperature,
-                "top_p": self.top_p,
-                "top_k": self.top_k
-            }
+#         if self.prompt_driver.model == "anthropic.claude-3-sonnet-20240229-v1:0" or self.prompt_driver.model == "anthropic.claude-3-haiku-20240307-v1:0":
+        return {
+            "max_tokens": 4096,
+            "stop_sequences": self.tokenizer.stop_sequences,
+            "temperature": self.prompt_driver.temperature,
+            "top_p": self.top_p,
+            "top_k": self.top_k,
+            "anthropic_version": "bedrock-2023-05-31"
+        }
+#         else:
+#             return {
+#                 "max_tokens_to_sample": 4096,
+#                 "stop_sequences": self.tokenizer.stop_sequences,
+#                 "temperature": self.prompt_driver.temperature,
+#                 "top_p": self.top_p,
+#                 "top_k": self.top_k
+#             }
 
     def process_output(self, output: list[dict] | str | bytes) -> TextArtifact:
         if isinstance(output, bytes):
@@ -109,7 +120,7 @@ class BedrockClaudePromptModelDriver(BasePromptModelDriver):
         else:
             raise Exception("Output must be bytes.")
 
-        if self.prompt_driver.model == "anthropic.claude-3-sonnet-20240229-v1:0" or self.prompt_driver.model == "anthropic.claude-3-haiku-20240307-v1:0":
-            return TextArtifact(body["content"][0]["text"])
-        else:
-            return TextArtifact(body["completion"])
+#         if self.prompt_driver.model == "anthropic.claude-3-sonnet-20240229-v1:0" or self.prompt_driver.model == "anthropic.claude-3-haiku-20240307-v1:0":
+        return TextArtifact(body["content"][0]["text"])
+#         else:
+#             return TextArtifact(body["completion"])
