@@ -1,4 +1,4 @@
-{{ preamble }}
+Human: {{ preamble }}
 
 Here are the search results in numbered order:
 $search_results$
@@ -16,7 +16,9 @@ Follow each and every rule before responding to the user question.
 {% else %}
 $output_format_instructions$
 {% endif %}
-{% if appendix %}
 
-{{ appendix }}
+{% if appendix %}
+Assistant: {{ appendix }}
+{% else %}
+Assistant:
 {% endif %}
