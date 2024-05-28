@@ -15,10 +15,8 @@ class TextQueryTask(BaseTextInputTask):
     preamble: Optional[str] = field(default=None, kw_only=True)
 
     def run(self) -> TextArtifact:
-        print(">>>>> Passing structure memory")
-        print(self.query_engine.vector_store_driver.use_rag_api)
-#         if self.query_engine.vector_store_driver.use_rag_api == True:
-        self.query_engine.prompt_driver.structure = self.structure
+        if self.query_engine.vector_store_driver.use_rag_api == True:
+            self.query_engine.prompt_driver.structure = self.structure
 
         return self.query_engine.query(
             self.input.to_text(),
