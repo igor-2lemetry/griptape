@@ -3,16 +3,20 @@ Metadata: """
 {{ metadata }}
 """
 {% endif %}
-Search Results:
+<search_results>
 {% for segment in text_segments %}
 {{ segment }}
 {% endfor %}
+</search_results>
 
-Question:
+Here is the user's question:
+<question>
 {{ query }}
+</question>
 
 {% if rulesets %}
 Follow each and every rule before responding to the user question.
-Rules:
+<rules>
 {{ rulesets }}
+</rules>
 {% endif %}

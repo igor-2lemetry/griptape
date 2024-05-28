@@ -43,6 +43,9 @@ class VectorQueryEngine(BaseQueryEngine):
 
             retrieve_message = ""
 
+            if self.prompt_driver.model == "anthropic.claude-v2:1" or self.prompt_driver.model == "anthropic.claude-v2" or self.prompt_driver.model == "anthropic.claude-instant-v1":
+                self.retrieve_generator = J2("engines/query/vector_generate_xml.j2")
+
             retrieve_message = self.retrieve_generator.render(
                 preamble=preamble,
                 rulesets=J2("rulesets/rulesets.j2").render(rulesets=rulesets),
@@ -74,6 +77,9 @@ class VectorQueryEngine(BaseQueryEngine):
             preamble=preamble,
 #             rulesets=J2("rulesets/rulesets.j2").render(rulesets=rulesets),
         )
+
+        if self.prompt_driver.model == "anthropic.claude-v2:1" or self.prompt_driver.model == "anthropic.claude-v2" or self.prompt_driver.model == "anthropic.claude-instant-v1":
+            self.template_generator = J2("engines/query/vector_query_xml.j2")
 
         for artifact in artifacts:
             text_segments.append(artifact.value)
