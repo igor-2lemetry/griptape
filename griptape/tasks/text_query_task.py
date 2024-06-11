@@ -15,7 +15,7 @@ class TextQueryTask(BaseTextInputTask):
     preamble: Optional[str] = field(default=None, kw_only=True)
 
     def run(self) -> TextArtifact:
-        if self.query_engine.vector_store_driver.use_rag_api == True:
+        if self.query_engine.vector_store_driver.use_rag_api and self.query_engine.vector_store_driver.use_rag_api == True:
             self.query_engine.prompt_driver.structure = self.structure
 
         return self.query_engine.query(

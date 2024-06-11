@@ -38,7 +38,7 @@ class VectorQueryEngine(BaseQueryEngine):
     ) -> TextArtifact:
         preamble = preamble if preamble else self.DEFAULT_QUERY_PREAMBLE
 
-        if self.vector_store_driver.use_rag_api == True:
+        if self.vector_store_driver.use_rag_api and self.vector_store_driver.use_rag_api == True:
             print(">>>>> RetrieveAndGenerateAPI")
 
             retrieve_message = ""
