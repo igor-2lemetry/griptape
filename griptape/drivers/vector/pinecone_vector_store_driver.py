@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import Optional, TYPE_CHECKING
+from typing import Optional, TYPE_CHECKING, Any
 from griptape.utils import str_to_hash, import_optional_dependency
 from griptape.drivers import BaseVectorStoreDriver
 from attr import define, field
@@ -10,10 +10,10 @@ if TYPE_CHECKING:
 
 @define
 class PineconeVectorStoreDriver(BaseVectorStoreDriver):
-    api_key: str = field(kw_only=True)
-    index_name: str = field(kw_only=True)
-    environment: str = field(kw_only=True)
-    project_name: Optional[str] = field(default=None, kw_only=True)
+    api_key: str = field(kw_only=True, metadata={"serializable": True})
+    index_name: str = field(kw_only=True, metadata={"serializable": True})
+    environment: str = field(kw_only=True, metadata={"serializable": True})
+    project_name: Optional[str] = field(default=None, kw_only=True, metadata={"serializable": True})
     index: pinecone.Index = field(init=False)
 
     def __attrs_post_init__(self) -> None:
@@ -32,7 +32,7 @@ class PineconeVectorStoreDriver(BaseVectorStoreDriver):
     ) -> str:
         vector_id = vector_id if vector_id else str_to_hash(str(vector))
 
-        params = {"namespace": namespace} | kwargs
+        params: dict[str, Any] = {"namespace": namespace} | kwargs
 
         self.index.upsert([(vector_id, vector, meta)], **params)
 
@@ -94,12 +94,6 @@ class PineconeVectorStoreDriver(BaseVectorStoreDriver):
             )
             for r in results["matches"]
         ]
-
-    def create_index(self, name: str, **kwargs) -> None:
-        params = {"name": name, "dimension": self.embedding_driver.dimensions} | kwargs
-
-        pinecone = import_optional_dependency("pinecone")
-        pinecone.create_index(**params)
 
     def delete_vector(self, vector_id: str):
         raise NotImplementedError(f"{self.__class__.__name__} does not support deletion.")

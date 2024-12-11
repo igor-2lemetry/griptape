@@ -1,14 +1,9 @@
 from __future__ import annotations
-import json
 import logging
 from typing import TYPE_CHECKING, Optional
-from typing import Optional
 from attr import define, field, Factory
-from griptape.drivers import OpenAiChatPromptDriver
-from griptape.schemas import SummaryConversationMemorySchema
 from griptape.utils import J2, PromptStack
 from griptape.memory.structure import ConversationMemory
-from griptape.tokenizers import OpenAiTokenizer
 
 if TYPE_CHECKING:
     from griptape.drivers import BasePromptDriver
@@ -17,25 +12,27 @@ if TYPE_CHECKING:
 
 @define
 class SummaryConversationMemory(ConversationMemory):
-    offset: int = field(default=1, kw_only=True)
-    prompt_driver: BasePromptDriver = field(
-        default=Factory(lambda: OpenAiChatPromptDriver(model=OpenAiTokenizer.DEFAULT_OPENAI_GPT_3_CHAT_MODEL)),
-        kw_only=True,
-    )
-    summary: Optional[str] = field(default=None, kw_only=True)
-    summary_index: int = field(default=0, kw_only=True)
+    offset: int = field(default=1, kw_only=True, metadata={"serializable": True})
+    _prompt_driver: BasePromptDriver = field(kw_only=True, default=None, alias="prompt_driver")
+    summary: Optional[str] = field(default=None, kw_only=True, metadata={"serializable": True})
+    summary_index: int = field(default=0, kw_only=True, metadata={"serializable": True})
     summary_template_generator: J2 = field(default=Factory(lambda: J2("memory/conversation/summary.j2")), kw_only=True)
     summarize_conversation_template_generator: J2 = field(
         default=Factory(lambda: J2("memory/conversation/summarize_conversation.j2")), kw_only=True
     )
 
-    @classmethod
-    def from_dict(cls, memory_dict: dict) -> SummaryConversationMemory:
-        return SummaryConversationMemorySchema().load(memory_dict)
+    @property
+    def prompt_driver(self) -> BasePromptDriver:
+        if self._prompt_driver is None:
+            if self.structure is not None:
+                self._prompt_driver = self.structure.config.global_drivers.prompt_driver
+            else:
+                raise ValueError("Prompt Driver is not set.")
+        return self._prompt_driver
 
-    @classmethod
-    def from_json(cls, memory_json: str) -> SummaryConversationMemory:
-        return SummaryConversationMemory.from_dict(json.loads(memory_json))
+    @prompt_driver.setter
+    def prompt_driver(self, value: BasePromptDriver) -> None:
+        self._prompt_driver = value
 
     def to_prompt_stack(self, last_n: Optional[int] = None) -> PromptStack:
         stack = PromptStack()
@@ -47,9 +44,6 @@ class SummaryConversationMemory(ConversationMemory):
             stack.add_assistant_input(r.output)
 
         return stack
-
-    def to_dict(self) -> dict:
-        return dict(SummaryConversationMemorySchema().dump(self))
 
     def unsummarized_runs(self, last_n: Optional[int] = None) -> list[Run]:
         summary_index_runs = self.runs[self.summary_index :]
@@ -74,7 +68,7 @@ class SummaryConversationMemory(ConversationMemory):
             self.summary = self.summarize_runs(self.summary, runs_to_summarize)
             self.summary_index = 1 + self.runs.index(runs_to_summarize[-1])
 
-    def summarize_runs(self, previous_summary: str, runs: list[Run]) -> str:
+    def summarize_runs(self, previous_summary: str | None, runs: list[Run]) -> str | None:
         try:
             if len(runs) > 0:
                 summary = self.summarize_conversation_template_generator.render(summary=previous_summary, runs=runs)

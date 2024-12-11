@@ -24,13 +24,13 @@ class OpenSearchVectorStoreDriver(BaseVectorStoreDriver):
         index_name: The name of the index to use.
     """
 
-    host: str = field(kw_only=True)
-    port: int = field(default=443, kw_only=True)
-    http_auth: str | tuple[str, Optional[str]] = field(default=None, kw_only=True)
-    use_ssl: bool = field(default=True, kw_only=True)
-    verify_certs: bool = field(default=True, kw_only=True)
-    index_name: str = field(kw_only=True)
-    use_hybrid_search: bool = field(default=False, kw_only=True)
+    host: str = field(kw_only=True, metadata={"serializable": True})
+    port: int = field(default=443, kw_only=True, metadata={"serializable": True})
+    http_auth: str | tuple[str, Optional[str]] = field(default=None, kw_only=True, metadata={"serializable": True})
+    use_ssl: bool = field(default=True, kw_only=True, metadata={"serializable": True})
+    verify_certs: bool = field(default=True, kw_only=True, metadata={"serializable": True})
+    index_name: str = field(kw_only=True, metadata={"serializable": True})
+    use_hybrid_search: bool = field(default=False, kw_only=True, metadata={"serializable": True})
 
     client: OpenSearch = field(
         default=Factory(
@@ -193,40 +193,6 @@ class OpenSearchVectorStoreDriver(BaseVectorStoreDriver):
             )
             for hit in response["hits"]["hits"]
         ]
-
-    def create_index(self, vector_dimension: Optional[int] = None, settings_override: Optional[dict] = None) -> None:
-        """Creates a new vector index in OpenSearch.
-
-        The index is structured to support k-NN (k-nearest neighbors) queries.
-
-        Args:
-            vector_dimension: The dimension of vectors that will be stored in this index.
-
-        """
-        default_settings = {"number_of_shards": 1, "number_of_replicas": 1, "index.knn": True}
-
-        if settings_override:
-            default_settings.update(settings_override)
-
-        try:
-            if self.client.indices.exists(index=self.index_name):
-                logging.warning("Index already exists!")
-                return
-            else:
-                mapping = {
-                    "settings": default_settings,
-                    "mappings": {
-                        "properties": {
-                            "vector": {"type": "knn_vector", "dimension": vector_dimension},
-                            "namespace": {"type": "keyword"},
-                            "metadata": {"type": "object", "enabled": True},
-                        }
-                    },
-                }
-
-                self.client.indices.create(index=self.index_name, body=mapping)
-        except Exception as e:
-            logging.error(f"Error while handling index: {e}")
 
     def delete_vector(self, vector_id: str):
         raise NotImplementedError(f"{self.__class__.__name__} does not support deletion.")
