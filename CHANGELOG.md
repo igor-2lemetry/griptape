@@ -6,6 +6,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 
+## [0.23.2] - 2024-03-15
+
+### Fixed
+- Deprecation warnings not displaying for `Structure.prompt_driver`, `Structure.embedding_driver`, and `Structure.stream`.
+- `DummyException` error message not fully displaying.
+- `StructureConfig.task_memory` not defaulting to using `StructureConfig.global_drivers` by default.
+
+## [0.23.1] - 2024-03-07
+
+### Fixed
+- Action Subtask incorrectly raising an exception for actions without an input. 
+- Incorrect `GriptapeCloudKnowledgeBaseClient`'s API URLs. 
+- Issue with Tool Task system prompt causing the LLM to generate an invalid action.
+
 ## [0.23.0] - 2024-02-26
 
 ### Added 
