@@ -5,7 +5,7 @@ from griptape.artifacts import TextArtifact, BaseArtifact, ListArtifact
 from griptape.utils import PromptStack
 from griptape.engines import BaseQueryEngine
 from griptape.utils.j2 import J2
-from griptape.rules import Ruleset
+from griptape.rules import Ruleset, Rule
 
 if TYPE_CHECKING:
     from griptape.drivers import BaseVectorStoreDriver, BasePromptDriver
@@ -16,8 +16,8 @@ class VectorQueryEngine(BaseQueryEngine):
     answer_token_offset: int = field(default=400, kw_only=True)
     vector_store_driver: BaseVectorStoreDriver = field(kw_only=True)
     prompt_driver: BasePromptDriver = field(kw_only=True)
-    template_generator: J2 = field(default=Factory(lambda: J2("engines/query/vector_query.j2")), kw_only=True)
-    system_generator: J2 = field(default=Factory(lambda: J2("engines/query/vector_system.j2")), kw_only=True)
+    user_template_generator: J2 = field(default=Factory(lambda: J2("engines/query/user.j2")), kw_only=True)
+    system_template_generator: J2 = field(default=Factory(lambda: J2("engines/query/system.j2")), kw_only=True)
     retrieve_generator: J2 = field(default=Factory(lambda: J2("engines/query/vector_generate.j2")), kw_only=True)
 
     DEFAULT_QUERY_PREAMBLE = "You can answer questions by searching through text segments. Always be truthful. Don't make up facts. Use the below list of text segments to respond to the subsequent query. If the answer cannot be found in the segments, say 'I could not find an answer'."
@@ -39,9 +39,6 @@ class VectorQueryEngine(BaseQueryEngine):
             print(">>>>> RetrieveAndGenerateAPI")
 
             retrieve_message = ""
-
-            if self.prompt_driver.model == "anthropic.claude-v2:1" or self.prompt_driver.model == "anthropic.claude-v2" or self.prompt_driver.model == "anthropic.claude-instant-v1":
-                self.retrieve_generator = J2("engines/query/vector_generate_xml.j2")
 
             retrieve_message = self.retrieve_generator.render(
                 preamble=preamble,
@@ -66,45 +63,49 @@ class VectorQueryEngine(BaseQueryEngine):
             if isinstance(artifact, TextArtifact)
         ]
         text_segments = []
-        message = ""
+        user_message = ""
         system_message = ""
-
-        system_message = self.system_generator.render(
-            preamble=preamble,
-#             rulesets=J2("rulesets/rulesets.j2").render(rulesets=rulesets),
-        )
-
-        if self.prompt_driver.model == "anthropic.claude-v2:1" or self.prompt_driver.model == "anthropic.claude-v2" or self.prompt_driver.model == "anthropic.claude-instant-v1":
-            self.template_generator = J2("engines/query/vector_query_xml.j2")
 
         for artifact in artifacts:
             text_segments.append(artifact.value)
-
-            message = self.template_generator.render(
-#                 preamble=preamble,
-                metadata=metadata,
-                query=query,
-                text_segments=text_segments,
+            system_message = self.system_template_generator.render(
+                preamble=preamble,
                 rulesets=J2("rulesets/rulesets.j2").render(rulesets=rulesets),
+                metadata=metadata,
+                text_segments=text_segments,
             )
+
+            user_message = self.user_template_generator.render(query=query)
+
             message_token_count = self.prompt_driver.token_count(
-                PromptStack(inputs=[PromptStack.Input(message, role=PromptStack.USER_ROLE)])
+                PromptStack(
+                    inputs=[
+                        PromptStack.Input(system_message, role=PromptStack.SYSTEM_ROLE),
+                        PromptStack.Input(user_message, role=PromptStack.USER_ROLE),
+                    ]
+                )
             )
 
             if message_token_count + self.answer_token_offset >= tokenizer.max_input_tokens:
                 text_segments.pop()
 
-                message = self.template_generator.render(
-#                     preamble=preamble,
-                    metadata=metadata,
-                    query=query,
-                    text_segments=text_segments,
+                system_message = self.system_template_generator.render(
+                    preamble=preamble,
                     rulesets=J2("rulesets/rulesets.j2").render(rulesets=rulesets),
+                    metadata=metadata,
+                    text_segments=text_segments,
                 )
 
                 break
 
-        return self.prompt_driver.run(PromptStack(inputs=[PromptStack.Input(system_message, role=PromptStack.SYSTEM_ROLE), PromptStack.Input(message, role=PromptStack.USER_ROLE)]))
+        return self.prompt_driver.run(
+            PromptStack(
+                inputs=[
+                    PromptStack.Input(system_message, role=PromptStack.SYSTEM_ROLE),
+                    PromptStack.Input(user_message, role=PromptStack.USER_ROLE),
+                ]
+            )
+        )
 
     def upsert_text_artifact(self, artifact: TextArtifact, namespace: Optional[str] = None) -> str:
         result = self.vector_store_driver.upsert_text_artifact(artifact, namespace=namespace)

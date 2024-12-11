@@ -58,3 +58,36 @@ class TestActionsSubtask:
         assert json_dict[0]["name"] == "MockTool"
         assert json_dict[0]["path"] == "test_no_schema"
         assert json_dict[0].get("input") is None
+
+    def test_no_actions(self):
+        valid_input = "Thought: need to test\n" "<|Response|>: test observation\n" "Answer: test output"
+
+        task = ToolkitTask(tools=[MockTool()])
+        Agent().add_task(task)
+        subtask = task.add_subtask(ActionsSubtask(valid_input))
+        json_dict = json.loads(subtask.actions_to_json())
+
+        assert len(json_dict) == 0
+
+    def test_empty_actions(self):
+        valid_input = "Thought: need to test\n" "Actions: []\n" "<|Response|>: test observation\n" "Answer: test output"
+
+        task = ToolkitTask(tools=[MockTool()])
+        Agent().add_task(task)
+        subtask = task.add_subtask(ActionsSubtask(valid_input))
+        json_dict = json.loads(subtask.actions_to_json())
+
+        assert len(json_dict) == 0
+
+    def test_invalid_actions(self):
+        invalid_input = (
+            "Thought: need to test\n" "Actions: [{,{]\n" "<|Response|>: test observation\n" "Answer: test output"
+        )
+
+        task = ToolkitTask(tools=[MockTool()])
+        Agent().add_task(task)
+        subtask = task.add_subtask(ActionsSubtask(invalid_input))
+        json_dict = json.loads(subtask.actions_to_json())
+
+        assert json_dict[0]["name"] == "error"
+        assert "Action input parsing error" in json_dict[0]["input"]["error"]

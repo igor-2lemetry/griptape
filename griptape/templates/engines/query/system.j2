@@ -1,0 +1,18 @@
+{{ preamble }}
+{% if metadata %}
+
+Metadata: """
+{{ metadata }}
+"""
+{% endif %}
+
+Search Results:
+{% for segment in text_segments %}
+{{ segment }}
+{% endfor %}
+{% if rulesets %}
+
+Follow each and every rule before responding to the user question.
+Rules:
+{{ rulesets }}
+{% endif %}

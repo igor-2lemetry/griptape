@@ -18,9 +18,8 @@ class TestOpenAiStructureConfig:
                 "type": "StructureGlobalDriversConfig",
                 "prompt_driver": {
                     "type": "OpenAiChatPromptDriver",
-                    "api_key": None,
                     "base_url": None,
-                    "model": "gpt-4",
+                    "model": "gpt-4o",
                     "organization": None,
                     "response_format": None,
                     "seed": None,
@@ -31,14 +30,12 @@ class TestOpenAiStructureConfig:
                 },
                 "conversation_memory_driver": None,
                 "embedding_driver": {
-                    "api_key": None,
                     "base_url": None,
                     "model": "text-embedding-3-small",
                     "organization": None,
                     "type": "OpenAiEmbeddingDriver",
                 },
                 "image_generation_driver": {
-                    "api_key": None,
                     "api_version": None,
                     "base_url": None,
                     "image_size": "512x512",
@@ -60,7 +57,6 @@ class TestOpenAiStructureConfig:
                 },
                 "vector_store_driver": {
                     "embedding_driver": {
-                        "api_key": None,
                         "base_url": None,
                         "model": "text-embedding-3-small",
                         "organization": None,
@@ -74,10 +70,9 @@ class TestOpenAiStructureConfig:
                 "query_engine": {
                     "type": "StructureTaskMemoryQueryEngineConfig",
                     "prompt_driver": {
-                        "api_key": None,
                         "base_url": None,
                         "type": "OpenAiChatPromptDriver",
-                        "model": "gpt-4",
+                        "model": "gpt-4o",
                         "organization": None,
                         "response_format": None,
                         "seed": None,
@@ -90,7 +85,6 @@ class TestOpenAiStructureConfig:
                         "type": "LocalVectorStoreDriver",
                         "embedding_driver": {
                             "type": "OpenAiEmbeddingDriver",
-                            "api_key": None,
                             "base_url": None,
                             "organization": None,
                             "model": "text-embedding-3-small",
@@ -103,9 +97,8 @@ class TestOpenAiStructureConfig:
                         "type": "StructureTaskMemoryExtractionEngineCsvConfig",
                         "prompt_driver": {
                             "type": "OpenAiChatPromptDriver",
-                            "api_key": None,
                             "base_url": None,
-                            "model": "gpt-4",
+                            "model": "gpt-4o",
                             "organization": None,
                             "response_format": None,
                             "seed": None,
@@ -119,9 +112,8 @@ class TestOpenAiStructureConfig:
                         "type": "StructureTaskMemoryExtractionEngineJsonConfig",
                         "prompt_driver": {
                             "type": "OpenAiChatPromptDriver",
-                            "api_key": None,
                             "base_url": None,
-                            "model": "gpt-4",
+                            "model": "gpt-4o",
                             "organization": None,
                             "response_format": None,
                             "seed": None,
@@ -136,9 +128,8 @@ class TestOpenAiStructureConfig:
                     "type": "StructureTaskMemorySummaryEngineConfig",
                     "prompt_driver": {
                         "type": "OpenAiChatPromptDriver",
-                        "api_key": None,
                         "base_url": None,
-                        "model": "gpt-4",
+                        "model": "gpt-4o",
                         "organization": None,
                         "response_format": None,
                         "seed": None,
