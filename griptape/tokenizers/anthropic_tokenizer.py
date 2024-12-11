@@ -14,20 +14,13 @@ if TYPE_CHECKING:
 
 @define()
 class AnthropicTokenizer(BaseTokenizer):
-    DEFAULT_MODEL = "claude-2.1"
-    MODEL_PREFIXES_TO_MAX_TOKENS = {"claude-2.1": 200000, "claude": 100000}
+    MODEL_PREFIXES_TO_MAX_INPUT_TOKENS = {"claude-3": 200000, "claude-2.1": 200000, "claude": 100000}
+    MODEL_PREFIXES_TO_MAX_OUTPUT_TOKENS = {"claude": 4096}
 
-    model: str = field(kw_only=True)
-    max_tokens: int = field(kw_only=True, default=Factory(lambda self: self.default_max_tokens(), takes_self=True))
     client: Anthropic = field(
         default=Factory(lambda: import_optional_dependency("anthropic").Anthropic()),
         kw_only=True,
     )
-
-    def default_max_tokens(self) -> int:
-        tokens = next(v for k, v in self.MODEL_PREFIXES_TO_MAX_TOKENS.items() if self.model.startswith(k))
-
-        return tokens
 
     def count_tokens(self, text: str | list[BetaMessageParam]) -> int:
         types = import_optional_dependency("anthropic.types.beta")

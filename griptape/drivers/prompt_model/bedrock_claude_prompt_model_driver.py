@@ -10,6 +10,8 @@ from griptape.tokenizers import BedrockClaudeTokenizer
 
 @define
 class BedrockClaudePromptModelDriver(BasePromptModelDriver):
+    ANTHROPIC_VERSION = "bedrock-2023-05-31"  # static string for AWS: https://docs.aws.amazon.com/bedrock/latest/userguide/model-parameters-anthropic-claude-messages.html#api-inference-examples-claude-multimodal-code-example
+
     top_p: float = field(default=0.999, kw_only=True, metadata={"serializable": True})
     top_k: int = field(default=250, kw_only=True, metadata={"serializable": True})
     _tokenizer: BedrockClaudeTokenizer = field(default=None, kw_only=True)
@@ -39,43 +41,32 @@ class BedrockClaudePromptModelDriver(BasePromptModelDriver):
             return self._tokenizer
 
     def prompt_stack_to_model_input(self, prompt_stack: PromptStack) -> dict:
-        prompt_lines = []
-
-        system_to_combine_with_human = ""
-
-        system_prompt = None
-        messages = []
-
-        for idx, i in enumerate(prompt_stack.inputs):
-            if i.is_assistant():
-                messages.append({"role": "assistant", "content": i.content})
-            elif i.is_user():
-                if (idx == len(prompt_stack.inputs) - 1 or idx == len(prompt_stack.inputs) - 2):
-                    messages.append({"role": "user", "content": f"{system_to_combine_with_human}{i.content}"})
-                else:
-                    messages.append({"role": "user", "content": i.content})
-            elif i.is_system():
-                if self.prompt_driver.model == "anthropic.claude-v2" or self.prompt_driver.model == "anthropic.claude-instant-v1":
-                    system_to_combine_with_human = f"{i.content}\n\n"
-                else:
-                    system_prompt = i.content
+        messages = [
+            {"role": self.__to_anthropic_role(prompt_input), "content": prompt_input.content}
+            for prompt_input in prompt_stack.inputs
+            if not prompt_input.is_system()
+        ]
+        system = next((i for i in prompt_stack.inputs if i.is_system()), None)
 
         if self.assistant_appendix != None:
             messages.append({"role": "assistant", "content": self.assistant_appendix})
 
-        if system_prompt is None:
+        if system is None:
             return {"messages": messages}
         else:
-            return {"messages": messages, "system": system_prompt}
+            return {"messages": messages, "system": system.content}
 
     def prompt_stack_to_model_params(self, prompt_stack: PromptStack) -> dict:
+        input = self.prompt_stack_to_model_input(prompt_stack)
+
         return {
-            "max_tokens": 4096,
             "stop_sequences": self.tokenizer.stop_sequences,
             "temperature": self.prompt_driver.temperature,
             "top_p": self.top_p,
             "top_k": self.top_k,
-            "anthropic_version": "bedrock-2023-05-31"
+            "max_tokens": self.prompt_driver.max_output_tokens(self.prompt_driver.prompt_stack_to_string(prompt_stack)),
+            "anthropic_version": self.ANTHROPIC_VERSION,
+            **input,
         }
 
     def process_output(self, output: list[dict] | str | bytes) -> TextArtifact:
@@ -84,4 +75,17 @@ class BedrockClaudePromptModelDriver(BasePromptModelDriver):
         else:
             raise Exception("Output must be bytes.")
 
-        return TextArtifact(body["content"][0]["text"])
+        if body["type"] == "content_block_delta":
+            return TextArtifact(value=body["delta"]["text"])
+        elif body["type"] == "message":
+            return TextArtifact(value=body["content"][0]["text"])
+        else:
+            return TextArtifact(value="")
+
+    def __to_anthropic_role(self, prompt_input: PromptStack.Input) -> str:
+        if prompt_input.is_system():
+            return "system"
+        elif prompt_input.is_assistant():
+            return "assistant"
+        else:
+            return "user"
