@@ -72,8 +72,9 @@ class AmazonBedrockPromptDriver(BasePromptDriver):
             self._prompt_stack_input_to_message(input) for input in prompt_stack.inputs if not input.is_system()
         ]
 
-        if self.assistant_appendix != None:
-            messages.append({"role": "assistant", "content": self.assistant_appendix})
+        # should be moved to prompt_stack ideally
+        if self.assistant_appendix:
+            messages.append({"role": "assistant", "content": [{"text": self.assistant_appendix}]})
 
         print(">>>>> PAYLOAD TO BEDROCK")
         print(dumps({
