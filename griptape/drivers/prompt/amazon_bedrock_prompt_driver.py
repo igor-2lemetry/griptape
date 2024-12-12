@@ -1,9 +1,9 @@
-import json
-
 from __future__ import annotations
 
 from collections.abc import Iterator
 from typing import TYPE_CHECKING, Any, Optional
+
+from json import dumps
 
 from attrs import Factory, define, field
 
@@ -76,7 +76,7 @@ class AmazonBedrockPromptDriver(BasePromptDriver):
             messages.append({"role": "assistant", "content": self.assistant_appendix})
 
         print(">>>>> PAYLOAD TO BEDROCK")
-        print(json.dumps({
+        print(dumps({
             "modelId": self.model,
             "messages": messages,
             "system": system_messages,
