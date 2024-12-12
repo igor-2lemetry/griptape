@@ -18,7 +18,6 @@ class VectorQueryEngine(BaseQueryEngine):
     prompt_driver: BasePromptDriver = field(kw_only=True)
     user_template_generator: J2 = field(default=Factory(lambda: J2("engines/query/user.j2")), kw_only=True)
     system_template_generator: J2 = field(default=Factory(lambda: J2("engines/query/system.j2")), kw_only=True)
-    retrieve_generator: J2 = field(default=Factory(lambda: J2("engines/query/vector_generate.j2")), kw_only=True)
 
     DEFAULT_QUERY_PREAMBLE = "You can answer questions by searching through text segments. Always be truthful. Don't make up facts. Use the below list of text segments to respond to the subsequent query. If the answer cannot be found in the segments, say 'I could not find an answer'."
 
@@ -34,27 +33,6 @@ class VectorQueryEngine(BaseQueryEngine):
         preamble: Optional[str] = None,
     ) -> TextArtifact:
         preamble = preamble if preamble else self.DEFAULT_QUERY_PREAMBLE
-
-        if hasattr(self.vector_store_driver, 'use_rag_api') and self.vector_store_driver.use_rag_api == True:
-            print(">>>>> RetrieveAndGenerateAPI")
-
-            retrieve_message = ""
-
-            retrieve_message = self.retrieve_generator.render(
-                preamble=preamble,
-                rulesets=J2("rulesets/rulesets.j2").render(rulesets=rulesets),
-                appendix=self.prompt_driver.prompt_model_driver.assistant_appendix
-            )
-
-            session_id = ""
-
-            if len(self.prompt_driver.structure.conversation_memory.runs) > 0:
-                session_id = self.prompt_driver.structure.conversation_memory.runs[-1].output.split('<SID>')[-1]
-            else:
-                print(">>>>> No session stored")
-
-            return self.vector_store_driver.retrieve_and_generate(query, top_n, namespace, prompt=retrieve_message, model=self.prompt_driver.model, session_id=session_id)
-
         tokenizer = self.prompt_driver.tokenizer
         result = self.vector_store_driver.query(query, top_n, namespace, filter=filter)
         artifacts = [
@@ -74,7 +52,6 @@ class VectorQueryEngine(BaseQueryEngine):
                 metadata=metadata,
                 text_segments=text_segments,
             )
-
             user_message = self.user_template_generator.render(query=query)
 
             message_token_count = self.prompt_driver.tokenizer.count_tokens(

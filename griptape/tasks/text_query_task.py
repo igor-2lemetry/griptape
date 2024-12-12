@@ -31,9 +31,6 @@ class TextQueryTask(BaseTextInputTask):
         self._query_engine = value
 
     def run(self) -> TextArtifact:
-        if hasattr(self.query_engine.vector_store_driver, 'use_rag_api') and self.query_engine.vector_store_driver.use_rag_api == True:
-            self.query_engine.prompt_driver.structure = self.structure
-
         return self.query_engine.query(
             self.input.to_text(),
             namespace=self.namespace,

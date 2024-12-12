@@ -20,7 +20,6 @@ class BedrockKnowledgeBaseVectorStoreDriver(BaseVectorStoreDriver):
 
     knowledge_base_id: str = field(kw_only=True)
     use_hybrid_search: bool = field(default=False, kw_only=True)
-    use_rag_api: bool = field(default=False, kw_only=True)
 
     def query(
         self,
@@ -60,67 +59,6 @@ class BedrockKnowledgeBaseVectorStoreDriver(BaseVectorStoreDriver):
             )
             for res in response["retrievalResults"]
         ]
-
-    def retrieve_and_generate(
-        self,
-        query: str,
-        count: Optional[int] = None,
-        namespace: Optional[str] = None,
-        include_vectors: bool = False,
-        prompt: Optional[str] = None,
-        model: Optional[str] = None,
-        session_id: Optional[str] = None,
-        **kwargs,
-    ) -> TextArtifact:
-        print("Retrieve and Generate API")
-        count = count if count else BaseVectorStoreDriver.DEFAULT_QUERY_COUNT
-        search_type = 'HYBRID' if self.use_hybrid_search else 'SEMANTIC'
-        region = import_optional_dependency("boto3").Session().region_name
-        print(">>>>> QUERY for SEARCH")
-        print(query)
-        print(count)
-        print(search_type)
-
-        query_body = {'text': query}
-        query_params = {
-            'type': 'KNOWLEDGE_BASE',
-            'knowledgeBaseConfiguration': {
-                'knowledgeBaseId': self.knowledge_base_id,
-                'modelArn': f'arn:aws:bedrock:{region}::foundation-model/{model}',
-                'retrievalConfiguration': {
-                    'vectorSearchConfiguration': {
-                        'numberOfResults': count,
-                        'overrideSearchType': search_type
-                    }
-                },
-                'generationConfiguration': {
-                    'promptTemplate': {
-                        'textPromptTemplate': prompt
-                    }
-                }
-            }
-        }
-
-        print(">>>>> BedrockKnowledgeBase Query")
-        print(session_id)
-        print(query_params)
-
-        if session_id:
-            response = self.bedrock_agent_client.retrieve_and_generate(
-                input=query_body,
-                sessionId=session_id,
-                retrieveAndGenerateConfiguration=query_params
-            )
-        else:
-            response = self.bedrock_agent_client.retrieve_and_generate(
-                input=query_body,
-                retrieveAndGenerateConfiguration=query_params
-            )
-
-        print(">>>>> BedrockKnowledgeBase Response")
-        print(response)
-
-        return TextArtifact(response["output"]["text"] + '<SID>' + response["sessionId"])
 
     def upsert_vector(
         self,
