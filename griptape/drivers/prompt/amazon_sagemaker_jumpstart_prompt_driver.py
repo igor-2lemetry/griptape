@@ -78,7 +78,9 @@ class AmazonSageMakerJumpstartPromptDriver(BasePromptDriver):
         prompt = "<|begin_of_text|>"
 
         for i in prompt_stack.inputs:
-          prompt += self._prompt_stack_input_to_message(i)
+            print(i)
+            if i.role != 'system':
+                prompt += self._prompt_stack_input_to_message(i)
 
         prompt += "<|start_header_id|>assistant<|end_header_id|>\n\n"
 
@@ -101,6 +103,6 @@ class AmazonSageMakerJumpstartPromptDriver(BasePromptDriver):
         return {
             "temperature": self.temperature,
             "max_new_tokens": self.max_tokens,
-            "top_p": elf.top_p,
+            "top_p": self.top_p,
             "stop": "<|eot_id|>"
         }
