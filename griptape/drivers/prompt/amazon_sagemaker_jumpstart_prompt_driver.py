@@ -77,7 +77,8 @@ class AmazonSageMakerJumpstartPromptDriver(BasePromptDriver):
     def _to_model_input(self, prompt_stack: PromptStack) -> str:
         prompt = "<|begin_of_text|>"
 
-        prompt += self._prompt_stack_input_to_message(i) for i in prompt_stack.inputs
+        for i in prompt_stack.inputs:
+          prompt += self._prompt_stack_input_to_message(i)
 
         prompt += "<|start_header_id|>assistant<|end_header_id|>\n\n"
 
