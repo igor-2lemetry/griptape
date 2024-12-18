@@ -8,7 +8,7 @@ from attrs import Factory, define, field
 
 from griptape.artifacts import TextArtifact
 from griptape.drivers.prompt.base_prompt_driver import BasePromptDriver
-from griptape.tokenizers import HuggingFaceTokenizer
+from griptape.tokenizers import SimpleTokenizer
 from griptape.utils import import_optional_dependency
 
 if TYPE_CHECKING:
@@ -28,9 +28,11 @@ class AmazonSageMakerJumpstartPromptDriver(BasePromptDriver):
     inference_component_name: Optional[str] = field(default=None, kw_only=True, metadata={"serializable": True})
     stream: bool = field(default=False, kw_only=True, metadata={"serializable": True})
     max_tokens: int = field(default=250, kw_only=True, metadata={"serializable": True})
-    tokenizer: HuggingFaceTokenizer = field(
+    tokenizer: BaseTokenizer = field(
         default=Factory(
-            lambda self: HuggingFaceTokenizer(model=self.model, max_output_tokens=self.max_tokens), takes_self=True
+            # make max_input_tokens configurable
+            lambda self: SimpleTokenizer(characters_per_token=4, max_input_tokens=8000, max_output_tokens=self.max_tokens),
+            takes_self=True,
         ),
         kw_only=True,
     )
