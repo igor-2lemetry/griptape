@@ -8,7 +8,7 @@ from attrs import Factory, define, field
 
 from griptape.artifacts import TextArtifact
 from griptape.drivers.prompt.base_prompt_driver import BasePromptDriver
-from griptape.tokenizers import SimpleTokenizer
+from griptape.tokenizers import HuggingFaceTokenizer
 from griptape.utils import import_optional_dependency
 
 if TYPE_CHECKING:
@@ -28,14 +28,22 @@ class AmazonSageMakerJumpstartPromptDriver(BasePromptDriver):
     inference_component_name: Optional[str] = field(default=None, kw_only=True, metadata={"serializable": True})
     stream: bool = field(default=False, kw_only=True, metadata={"serializable": True})
     max_tokens: int = field(default=250, kw_only=True, metadata={"serializable": True})
-    tokenizer: BaseTokenizer = field(
+    hf_token: str = field(default=None, kw_only=True, metadata={"serializable": True})
+    tokenizer: HuggingFaceTokenizer = field(
         default=Factory(
-            # make max_input_tokens configurable
-            lambda self: SimpleTokenizer(characters_per_token=4, max_input_tokens=8000, max_output_tokens=self.max_tokens),
+            lambda self: HuggingFaceTokenizer(model=self.model, max_output_tokens=self.max_tokens, token=self.hf_token),
             takes_self=True,
         ),
         kw_only=True,
     )
+#     tokenizer: BaseTokenizer = field(
+#         default=Factory(
+#             # make max_input_tokens configurable
+#             lambda self: SimpleTokenizer(characters_per_token=4, max_input_tokens=8000, max_output_tokens=self.max_tokens),
+#             takes_self=True,
+#         ),
+#         kw_only=True,
+#     )
 
     @stream.validator  # pyright: ignore
     def validate_stream(self, _, stream):
@@ -71,38 +79,63 @@ class AmazonSageMakerJumpstartPromptDriver(BasePromptDriver):
         raise NotImplementedError("streaming is not supported")
 
     def _prompt_stack_input_to_message(self, prompt_input: PromptStack.Input) -> dict:
-        return f"<|start_header_id|>{prompt_input.role}<|end_header_id|>\n\n{prompt_input.content}<|eot_id|>"
-#         return {"role": prompt_input.role, "content": prompt_input.content}
+        return {"role": prompt_input.role, "content": prompt_input.content}
 
     def _to_model_input(self, prompt_stack: PromptStack) -> str:
-        prompt = "<|begin_of_text|>"
+        prompt = self.tokenizer.tokenizer.apply_chat_template(
+            [self._prompt_stack_input_to_message(i) for i in prompt_stack.inputs],
+            tokenize=False,
+            add_generation_prompt=True,
+        )
 
-        for i in prompt_stack.inputs:
-            print(i)
-            if i.role != 'system':
-                prompt += self._prompt_stack_input_to_message(i)
-
-        prompt += "<|start_header_id|>assistant<|end_header_id|>\n\n"
-
-        print(prompt)
-
-        return prompt
-
-#         prompt = self.tokenizer.tokenizer.apply_chat_template(
-#             [self._prompt_stack_input_to_message(i) for i in prompt_stack.inputs],
-#             tokenize=False,
-#             add_generation_prompt=True,
-#         )
-#
-#         if isinstance(prompt, str):
-#             return prompt
-#         else:
-#             raise ValueError("Invalid output type.")
+        if isinstance(prompt, str):
+            return prompt
+        else:
+            raise ValueError("Invalid output type.")
 
     def _to_model_params(self, prompt_stack: PromptStack) -> dict:
         return {
             "temperature": self.temperature,
             "max_new_tokens": self.max_tokens,
-            "top_p": self.top_p,
-            "stop": "<|eot_id|>"
+            "do_sample": True,
+            "eos_token_id": self.tokenizer.tokenizer.eos_token_id,
+            "stop_strings": self.tokenizer.stop_sequences,
+            "return_full_text": False,
         }
+
+#     def _prompt_stack_input_to_message(self, prompt_input: PromptStack.Input) -> dict:
+#         return f"<|start_header_id|>{prompt_input.role}<|end_header_id|>\n\n{prompt_input.content}<|eot_id|>"
+# #         return {"role": prompt_input.role, "content": prompt_input.content}
+#
+#     def _to_model_input(self, prompt_stack: PromptStack) -> str:
+#         prompt = "<|begin_of_text|>"
+#
+#         for i in prompt_stack.inputs:
+#             print(i)
+#             if i.role != 'system':
+#                 prompt += self._prompt_stack_input_to_message(i)
+#
+#         prompt += "<|start_header_id|>assistant<|end_header_id|>\n\n"
+#
+#         print(prompt)
+#
+#         return prompt
+#
+# #         prompt = self.tokenizer.tokenizer.apply_chat_template(
+# #             [self._prompt_stack_input_to_message(i) for i in prompt_stack.inputs],
+# #             tokenize=False,
+# #             add_generation_prompt=True,
+# #         )
+# #
+# #         if isinstance(prompt, str):
+# #             return prompt
+# #         else:
+# #             raise ValueError("Invalid output type.")
+#
+#     def _to_model_params(self, prompt_stack: PromptStack) -> dict:
+#         return {
+#             "temperature": self.temperature,
+#             "max_new_tokens": self.max_tokens,
+#             "top_p": self.top_p,
+#             "stop": "<|eot_id|>"
+#         }

@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Optional
 from attrs import define, field, Factory
 from griptape.utils import import_optional_dependency
 from griptape.tokenizers import BaseTokenizer
@@ -10,9 +10,10 @@ if TYPE_CHECKING:
 
 @define()
 class HuggingFaceTokenizer(BaseTokenizer):
+    token: Optional[str] = field(default=None, kw_only=True)
     tokenizer: PreTrainedTokenizerBase = field(
         default=Factory(
-            lambda self: import_optional_dependency("transformers").AutoTokenizer.from_pretrained(self.model),
+            lambda self: import_optional_dependency("transformers").AutoTokenizer.from_pretrained(self.model, token=self.token),
             takes_self=True,
         ),
         kw_only=True,
